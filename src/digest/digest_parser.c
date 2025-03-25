@@ -1,10 +1,31 @@
 #include "commons.h"
 #include "digest/digest.h"
 
+static int	add_file_to_conf(t_conf_digest *conf_digest, char *file)
+{
+	t_list	*new;
+	char	*file_copy;
+
+	file_copy = strdup(file);
+	if (!file_copy)
+	{
+		perror(FT_SSL_NAME);
+		return (1);
+	}
+	new = lstnew(file_copy);
+	if (!new)
+	{
+		perror(FT_SSL_NAME);
+		free(file_copy);
+		return (1);
+	}
+	lstadd_back(&conf_digest->files, new);
+	return (0);
+}
+
 static error_t parse_opt(int key, char *arg, struct argp_state *state)
 {
 	t_conf_digest *conf = state->input;
-	(void)arg;
 
 	switch (key)
 	{
@@ -19,16 +40,20 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 			break;
 		case 's':
 			conf->flags |= FLAG_DIGEST_STRING;
-			// TODO: Store the string in a proper way
+			conf->string = arg;
 			break;
 		case ARGP_KEY_ARG:
 			if (state->arg_num >= 1)
 				argp_usage(state);
-			// TODO: Store the file argument
+			if (add_file_to_conf(conf, arg))
+				return (1);
 			break;
 		case ARGP_KEY_END:
-			if (state->arg_num < 1 && !(conf->flags & FLAG_DIGEST_STRING) && !(conf->flags & FLAG_DIGEST_ECHO))
+			if (state->arg_num < 1 && !(conf->flags & FLAG_DIGEST_STRING) && !(conf->flags & FLAG_DIGEST_ECHO) && !lstsize(*conf->files))
+			{
 				argp_usage(state);
+				return (1);
+			}
 			break;
 		default:
 			return (ARGP_ERR_UNKNOWN);
@@ -36,12 +61,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 	return (0);
 }
 
-static struct argp argp = {digest_options, parse_opt, "[FILE...]", "FILE... files to digest (default is stdin)", NULL, NULL, NULL};
-
 int digest_parser(int argc, char **argv, t_conf *conf)
 {
 	t_conf_digest *conf_digest = (t_conf_digest *)conf;
 	memset(conf_digest, 0, sizeof(t_conf_digest));
-	argp_parse(&argp, argc, argv, 0, 0, conf_digest);
-	return (0);
+	struct argp argp = {digest_options, parse_opt, "[FILE...]", "FILE... files to digest (default is stdin)", NULL, NULL, NULL};
+	return (argp_parse(&argp, argc, argv, 0, 0, conf_digest));
 }

@@ -1,6 +1,9 @@
 #pragma once
 
 #include "libs.h"
+#include "list.h"
+
+#define FT_SSL_NAME "ft_ssl"
 
 typedef struct s_conf_digest	t_conf_digest;
 typedef union u_conf			t_conf;
@@ -18,6 +21,7 @@ typedef struct s_handler {
 	enum e_handlers_types	type;
 	int						(*parser)(int argc, char **argv, t_conf *conf);
 	int						(*executor)(t_conf *conf);
+	void					(*cleaner)(t_conf *conf);
 }	t_handler;
 
 typedef union u_conf {
@@ -29,19 +33,22 @@ static const t_handler HANDLERS[] = {
 		.name = "md5",
 		.type = DIGEST,
 		.parser = digest_parser,
-		.executor = NULL
+		.executor = NULL,
+		.cleaner = digest_cleaner
 	},
 	{
 		.name = "sha256",
 		.type = DIGEST,
 		.parser = digest_parser,
-		.executor = NULL
+		.executor = NULL,
+		.cleaner = digest_cleaner
 	},
 	{
 		.name = NULL,
 		.type = VOID,
 		.parser = NULL,
-		.executor = NULL
+		.executor = NULL,
+		.cleaner = NULL
 	}
 };
 

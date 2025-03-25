@@ -11,7 +11,9 @@ enum e_digest_flags
 };
 
 typedef struct s_conf_digest {
-	int	flags;
+	int		flags;
+	char	*string;
+	t_list	*files;
 }	t_conf_digest;
 
 static struct argp_option digest_options[] __attribute__((used)) = {
@@ -22,4 +24,5 @@ static struct argp_option digest_options[] __attribute__((used)) = {
 	{0}
 };
 
-int	digest_parser(int argc, char **argv, t_conf *conf);
+int		digest_parser(int argc, char **argv, t_conf *conf);
+void	digest_cleaner(t_conf *conf);
