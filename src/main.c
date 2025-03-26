@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 			if (strcmp(argv[1], HANDLERS[i].name) != 0)
 				continue;
 			HANDLERS[i].parser(argc - 1, argv + 1, &conf);
-			//HANDLERS[i].executor(&conf);
+			HANDLERS[i].executor(&conf);
 			HANDLERS[i].cleaner(&conf);
 			return (0);
 		}

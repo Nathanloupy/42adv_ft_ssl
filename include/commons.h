@@ -9,6 +9,7 @@ typedef struct s_conf_digest	t_conf_digest;
 typedef union u_conf			t_conf;
 
 #include "digest.h"
+#include "md5/md5.h"
 
 enum e_handlers_types {
 	DIGEST,
@@ -33,7 +34,7 @@ static const t_handler HANDLERS[] = {
 		.name = "md5",
 		.type = DIGEST,
 		.parser = digest_parser,
-		.executor = NULL,
+		.executor = md5_executor,
 		.cleaner = digest_cleaner
 	},
 	{

@@ -26,3 +26,5 @@ static struct argp_option digest_options[] __attribute__((used)) = {
 
 int		digest_parser(int argc, char **argv, t_conf *conf);
 void	digest_cleaner(t_conf *conf);
+
+#include "md5/md5.h"
