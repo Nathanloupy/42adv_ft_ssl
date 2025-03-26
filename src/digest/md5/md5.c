@@ -94,7 +94,10 @@ static char	*md5_get_hash_str(t_md5 *md5)
 	if (!hash_str)
 		return (perror_ptr());
 	for (int i = 0; i < 4; i++)
-		sprintf(hash_str + (i * 8), "%08x", md5->hash[i]);
+	{
+		for (int j = 0; j < 4; j++)
+			sprintf(hash_str + (i * 8 + j * 2), "%02x", (md5->hash[i] >> (j * 8)) & 0xFF);
+	}
 	return (hash_str);
 }
 
@@ -103,6 +106,7 @@ char	*md5_process(t_md5 *md5, unsigned char *buffer, size_t buffer_size, int pro
 	unsigned char	*block;
 	char			*hash_str = NULL;
 	size_t			remaining;
+	size_t			last_handled_block_index = 0;
 	
 	if (buffer_size == 0 && process_last_block)
 	{
@@ -115,16 +119,17 @@ char	*md5_process(t_md5 *md5, unsigned char *buffer, size_t buffer_size, int pro
 	{
 		block = buffer + i;
 		remaining = buffer_size - i;
-		
+		last_handled_block_index = i;
+
 		if (remaining >= MD5_BLOCK_SIZE)
 		{
-			md5_process_complete_block(md5, block);
 			md5->data_size += MD5_BLOCK_SIZE;
+			md5_process_complete_block(md5, block);
 		}
 		else if (process_last_block)
 		{
-			md5_process_last_block(md5, block, remaining);
 			md5->data_size += remaining;
+			md5_process_last_block(md5, block, remaining);
 			hash_str = md5_get_hash_str(md5);
 			return (hash_str);
 		}
@@ -133,11 +138,13 @@ char	*md5_process(t_md5 *md5, unsigned char *buffer, size_t buffer_size, int pro
 	}
 	if (process_last_block)
 	{
-		md5_process_last_block(md5, block, 0);
+		remaining = buffer_size - last_handled_block_index;
+		md5->data_size += remaining;
+		md5_process_last_block(md5, block + last_handled_block_index, remaining);
 		hash_str = md5_get_hash_str(md5);
 		return (hash_str);
 	}
-	return (hash_str);
+	return (NULL);
 }
 
 void	md5_init(t_md5 *md5)

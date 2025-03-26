@@ -52,4 +52,4 @@ char	*md5_process(t_md5 *md5, unsigned char *buffer, size_t buffer_size, int pro
 int		md5_executor(t_conf *conf);
 
 /* MD5 - UTILS */
-void print_complete_block(const unsigned char *block);
+void print_complete_block(const unsigned char *block, char format);
