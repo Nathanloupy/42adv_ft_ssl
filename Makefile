@@ -18,6 +18,7 @@ FILES_DIGEST = digest_parser.c \
 				digest_cleaner.c
 
 FILES_MD5 = md5.c \
+			md5_executor.c \
 			md5_utils.c
 
 SRCS_MAIN = $(addprefix src/, $(FILES_MAIN))

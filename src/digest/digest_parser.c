@@ -8,16 +8,12 @@ static int	add_file_to_conf(t_conf_digest *conf_digest, char *file)
 
 	file_copy = strdup(file);
 	if (!file_copy)
-	{
-		perror(FT_SSL_NAME);
-		return (1);
-	}
+		return (perror_int());
 	new = lstnew(file_copy);
 	if (!new)
 	{
-		perror(FT_SSL_NAME);
 		free(file_copy);
-		return (1);
+		return (perror_int());
 	}
 	lstadd_back(&conf_digest->files, new);
 	return (0);

@@ -1,9 +1,10 @@
 #pragma once
 
+#define FT_SSL_NAME "ft_ssl"
+
 #include "libs.h"
 #include "list.h"
-
-#define FT_SSL_NAME "ft_ssl"
+#include "errors.h"
 
 typedef struct s_conf_digest	t_conf_digest;
 typedef union u_conf			t_conf;
