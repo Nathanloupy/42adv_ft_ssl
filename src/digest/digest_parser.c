@@ -45,11 +45,6 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 				return (1);
 			break;
 		case ARGP_KEY_END:
-			if (state->arg_num < 1 && !(conf->flags & FLAG_DIGEST_STRING) && !(conf->flags & FLAG_DIGEST_ECHO) && !lstsize(conf->files)) //TODO: check if this is correct
-			{
-				argp_usage(state);
-				return (1);
-			}
 			break;
 		default:
 			return (ARGP_ERR_UNKNOWN);

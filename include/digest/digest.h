@@ -10,10 +10,18 @@ enum e_digest_flags
 	FLAG_DIGEST_STRING = 1 << 3
 };
 
+enum e_digest_input_type
+{
+	INPUT_DIGEST_TYPE_STDIN,
+	INPUT_DIGEST_TYPE_STRING,
+	INPUT_DIGEST_TYPE_FILE
+};
+
 typedef struct s_conf_digest {
 	int		flags;
 	char	*string;
 	t_list	*files;
+	size_t	stdin_size;
 }	t_conf_digest;
 
 static struct argp_option digest_options[] __attribute__((used)) = {

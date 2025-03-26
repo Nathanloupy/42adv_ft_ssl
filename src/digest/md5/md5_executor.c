@@ -21,13 +21,60 @@ static int	add_to_input(char **input, unsigned char *buffer, size_t bytes_read)
 	return (0);
 }
 
-static void	print_result(char *result, t_conf_digest *conf_digest, int is_stdin, char *source_name)
+static void	print_result(char *result, t_conf_digest *conf_digest, char *source_name, int input_type)
 {
-	(void)conf_digest;
-	(void)is_stdin;
-	(void)result;
-	printf("%s\n", source_name);
-	printf("%s\n", result);
+	switch (input_type)
+	{
+		case INPUT_DIGEST_TYPE_STDIN:
+		{
+			if (conf_digest->flags & FLAG_DIGEST_ECHO)
+			{
+				fflush(stdout);
+				if (conf_digest->flags & FLAG_DIGEST_QUIET)
+				{
+					write(STDOUT_FILENO, source_name, conf_digest->stdin_size);
+					write(STDOUT_FILENO, "\n", 1);
+					write(STDOUT_FILENO, result, conf_digest->stdin_size);
+					write(STDOUT_FILENO, "\n", 1);
+				}
+				else
+				{
+					write(STDOUT_FILENO, "(\"", 2);
+					write(STDOUT_FILENO, source_name, conf_digest->stdin_size);
+					write(STDOUT_FILENO, "\")= ", 4);
+					write(STDOUT_FILENO, result, strlen(result));
+					write(STDOUT_FILENO, "\n", 1);
+				}
+			}
+			else if (conf_digest->flags & FLAG_DIGEST_QUIET)
+				printf("%s\n", result);
+			else
+				printf("(stdin)= %s\n", result);
+			break;
+		}
+		case INPUT_DIGEST_TYPE_STRING:
+		{
+			if (conf_digest->flags & FLAG_DIGEST_QUIET)
+				printf("%s\n", result);
+			else if (conf_digest->flags & FLAG_DIGEST_REVERSE)
+				printf("%s \"%s\"\n", result, source_name);
+			else
+				printf("MD5 (\"%s\") = %s\n", source_name, result);
+			break;
+		}
+		case INPUT_DIGEST_TYPE_FILE:
+		{
+			if (conf_digest->flags & FLAG_DIGEST_QUIET)
+				printf("%s\n", result);
+			else if (conf_digest->flags & FLAG_DIGEST_REVERSE)
+				printf("%s %s\n", result, source_name);
+			else
+				printf("MD5 (%s) = %s\n", source_name, result);
+			break;
+		}
+		default:
+			return;
+	}
 }
 
 int	md5_executor(t_conf *conf)
@@ -50,9 +97,12 @@ int	md5_executor(t_conf *conf)
 			total_bytes += bytes_read;
 		}
 		result = md5_process(&md5, buffer, total_bytes, 1);
+		conf_digest->stdin_size = total_bytes;
 		if (!result)
 			return (1);
-		print_result(result, conf_digest, 1, NULL);
+		print_result(result, conf_digest, input, INPUT_DIGEST_TYPE_STDIN);
+		if (input)
+			free(input);
 		free(result);
 		result = NULL;
 	}
@@ -62,35 +112,38 @@ int	md5_executor(t_conf *conf)
 		result = md5_process(&md5, (unsigned char *)conf_digest->string, strlen(conf_digest->string), 1);
 		if (!result)
 			return (1);
-		print_result(result, conf_digest, 0, conf_digest->string);
+		print_result(result, conf_digest, conf_digest->string, INPUT_DIGEST_TYPE_STRING);
 		free(result);
 		result = NULL;
 	}
-	t_list *current = conf_digest->files;
-	while (current)
+	if (lstsize(conf_digest->files) > 0)
 	{
-		md5_init(&md5);
-		int fd = open(current->data, O_RDONLY);
-		if (fd == -1)
+		t_list *current = conf_digest->files;
+		while (current)
 		{
-			perror_int();
+			md5_init(&md5);
+			int fd = open(current->data, O_RDONLY);
+			if (fd == -1)
+			{
+				perror_int();
+				current = current->next;
+				continue;
+			}
+			while ((bytes_read = read(fd, buffer, MD5_BLOCK_SIZE)) > 0)
+			{
+				if (bytes_read == MD5_BLOCK_SIZE)
+					md5_process(&md5, buffer, bytes_read, 0);
+				else
+					result = md5_process(&md5, buffer, bytes_read, 1);
+			}
+			close(fd);
+			if (!result)
+				return (1);
+			print_result(result, conf_digest, (char *)current->data, INPUT_DIGEST_TYPE_FILE);
+			free(result);
+			result = NULL;
 			current = current->next;
-			continue;
 		}
-		while ((bytes_read = read(fd, buffer, MD5_BLOCK_SIZE)) > 0)
-		{
-			if (bytes_read == MD5_BLOCK_SIZE)
-				md5_process(&md5, buffer, bytes_read, 0);
-			else
-				result = md5_process(&md5, buffer, bytes_read, 1);
-		}
-		close(fd);
-		if (!result)
-			return (1);
-		print_result(result, conf_digest, 0, (char *)current->data);
-		free(result);
-		result = NULL;
-		current = current->next;
 	}
 	return (0);
 }
