@@ -16,11 +16,12 @@ FILES_UTILS = print_commands.c \
 				errors.c
 
 FILES_DIGEST = digest_parser.c \
-				digest_cleaner.c
-
-FILES_MD5 = md5.c \
-			md5_executor.c \
-			md5_utils.c
+				digest_cleaner.c \
+				md5/md5.c \
+				md5/md5_executor.c \
+				md5/md5_utils.c \
+				sha256/sha256.c \
+				sha256/sha256_executor.c
 
 SRCS_MAIN = $(addprefix src/, $(FILES_MAIN))
 
@@ -28,17 +29,13 @@ SRCS_UTILS = $(addprefix src/utils/, $(FILES_UTILS))
 
 SRCS_DIGEST = $(addprefix src/digest/, $(FILES_DIGEST))
 
-SRCS_MD5 = $(addprefix src/digest/md5/, $(FILES_MD5))
-
 OBJS_MAIN = $(SRCS_MAIN:.c=.o)
 
 OBJS_UTILS = $(SRCS_UTILS:.c=.o)
 
 OBJS_DIGEST = $(SRCS_DIGEST:.c=.o)
 
-OBJS_MD5 = $(SRCS_MD5:.c=.o)
-
-OBJS = $(OBJS_MAIN) $(OBJS_UTILS) $(OBJS_DIGEST) $(OBJS_MD5)
+OBJS = $(OBJS_MAIN) $(OBJS_UTILS) $(OBJS_DIGEST)
 
 %.o: %.c
 	@$(CC) $(CCFLAGS) $(INCLUDES) -c $< -o $@

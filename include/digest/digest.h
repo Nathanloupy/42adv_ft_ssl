@@ -36,3 +36,4 @@ int		digest_parser(int argc, char **argv, t_conf *conf);
 void	digest_cleaner(t_conf *conf);
 
 #include "md5/md5.h"
+#include "sha256/sha256.h"
