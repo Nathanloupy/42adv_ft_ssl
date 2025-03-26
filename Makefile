@@ -12,7 +12,8 @@ INCLUDES = -I./include/ -I./include/digest/ -I./include/utils/
 FILES_MAIN = main.c
 
 FILES_UTILS = print_commands.c \
-				list.c
+				list.c \
+				errors.c
 
 FILES_DIGEST = digest_parser.c \
 				digest_cleaner.c
