@@ -42,7 +42,7 @@ static void	print_result(char *result, t_conf_digest *conf_digest, char *source_
 					write(STDOUT_FILENO, "(\"", 2);
 					write(STDOUT_FILENO, source_name, conf_digest->stdin_size);
 					write(STDOUT_FILENO, "\")= ", 4);
-					write(STDOUT_FILENO, result, strlen(result));
+					write(STDOUT_FILENO, result, 32);
 					write(STDOUT_FILENO, "\n", 1);
 				}
 			}
@@ -135,6 +135,10 @@ int	md5_executor(t_conf *conf)
 					md5_process(&md5, buffer, bytes_read, 0);
 				else
 					result = md5_process(&md5, buffer, bytes_read, 1);
+			}
+			if (bytes_read == 0 && !result)
+			{
+				result = md5_process(&md5, buffer, 0, 1);
 			}
 			close(fd);
 			if (!result)

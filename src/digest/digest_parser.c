@@ -35,6 +35,8 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 			conf->flags |= FLAG_DIGEST_REVERSE;
 			break;
 		case 's':
+			if (conf->flags & FLAG_DIGEST_STRING)
+				return (ARGP_ERR_UNKNOWN);
 			conf->flags |= FLAG_DIGEST_STRING;
 			conf->string = arg;
 			break;

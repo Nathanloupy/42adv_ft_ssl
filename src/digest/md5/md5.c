@@ -126,9 +126,16 @@ char	*md5_process(t_md5 *md5, unsigned char *buffer, size_t buffer_size, int pro
 			md5_process_last_block(md5, block, remaining);
 			md5->data_size += remaining;
 			hash_str = md5_get_hash_str(md5);
+			return (hash_str);
 		}
 		else
 			return (NULL);
+	}
+	if (process_last_block)
+	{
+		md5_process_last_block(md5, block, 0);
+		hash_str = md5_get_hash_str(md5);
+		return (hash_str);
 	}
 	return (hash_str);
 }
