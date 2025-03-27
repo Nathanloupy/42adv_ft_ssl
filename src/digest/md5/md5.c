@@ -2,7 +2,7 @@
 
 static void	fill_words(u_int32_t *words, const unsigned char *block)
 {
-	for (u_int32_t i = 0; i < 16; i++)
+	for (u_int32_t i = 0; i < 16; i++) //md5 -> little endian
 		words[i] = block[i * 4] | (block[i * 4 + 1] << 8) | (block[i * 4 + 2] << 16) | (block[i * 4 + 3] << 24);
 }
 

@@ -2,8 +2,8 @@
 
 static void	fill_words(u_int32_t *words, const unsigned char *block)
 {
-	for (u_int32_t i = 0; i < 16; i++)
-		words[i] = block[i * 4] | (block[i * 4 + 1] << 8) | (block[i * 4 + 2] << 16) | (block[i * 4 + 3] << 24);
+	for (u_int32_t i = 0; i < 16; i++) //sha256 -> big endian
+		words[i] = (block[i * 4] << 24) | (block[i * 4 + 1] << 16) | (block[i * 4 + 2] << 8) | block[i * 4 + 3];
 }
 
 static void	extend_words(u_int32_t *words)
