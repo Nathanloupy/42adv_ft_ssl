@@ -7,6 +7,13 @@
 #define MD5_H(B,C,D) (B ^ C ^ D)
 #define MD5_I(B,C,D) (C ^ (B | (~D)))
 
+#define MD5_A0 0x67452301
+#define MD5_B0 0xefcdab89
+#define MD5_C0 0x98badcfe
+#define MD5_D0 0x10325476
+
+#define MD5_BLOCK_SIZE 64
+
 static const u_int32_t MD5_SHIFTS[] = {
 	7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
 	5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
@@ -33,23 +40,12 @@ static const u_int32_t MD5_K[] = {
 	0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
 };
 
-#define MD5_A0 0x67452301
-#define MD5_B0 0xefcdab89
-#define MD5_C0 0x98badcfe
-#define MD5_D0 0x10325476
-
-#define MD5_BLOCK_SIZE 64
-
 typedef struct s_md5 {
 	size_t			data_size;
 	u_int32_t		hash[4];
 }	t_md5;
 
-
 /* MD5 - MAIN */
 void	md5_init(t_md5 *md5);
 char	*md5_process(t_md5 *md5, unsigned char *buffer, size_t buffer_size, int process_last_block);
 int		md5_executor(t_conf *conf);
-
-/* MD5 - UTILS */
-void print_complete_block(const unsigned char *block, char format);

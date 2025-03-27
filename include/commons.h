@@ -10,7 +10,6 @@ typedef struct s_conf_digest	t_conf_digest;
 typedef union u_conf			t_conf;
 
 #include "digest.h"
-#include "md5/md5.h"
 
 enum e_handlers_types {
 	DIGEST,
@@ -42,7 +41,7 @@ static const t_handler HANDLERS[] = {
 		.name = "sha256",
 		.type = DIGEST,
 		.parser = digest_parser,
-		.executor = NULL,
+		.executor = sha256_executor,
 		.cleaner = digest_cleaner
 	},
 	{
@@ -56,3 +55,4 @@ static const t_handler HANDLERS[] = {
 
 /* MAIN - UTILS */
 void	print_commands(char *command);
+void	print_block(const unsigned char *block, size_t block_size, char format);

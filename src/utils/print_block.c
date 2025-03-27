@@ -1,9 +1,8 @@
 #include "commons.h"
 
-void print_complete_block(const unsigned char *block, char format)
+void print_block(const unsigned char *block, size_t block_size, char format)
 {
-	printf("Binary representation of padded data (little endian):\n");
-	for (size_t i = 0; i < MD5_BLOCK_SIZE; i++)
+	for (size_t i = 0; i < block_size; i++)
 	{
 		if (format == 'h')
 			printf("%02x ", block[i]);

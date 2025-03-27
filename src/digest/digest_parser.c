@@ -1,5 +1,4 @@
 #include "commons.h"
-#include "digest/digest.h"
 
 static int	add_file_to_conf(t_conf_digest *conf_digest, char *file)
 {

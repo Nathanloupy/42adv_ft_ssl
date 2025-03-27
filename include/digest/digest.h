@@ -2,6 +2,12 @@
 
 #include "commons.h"
 
+#define ROTL(x, c) ((x << c) | (x >> (32 - c)))
+#define ROTR(x, c) ((x >> c) | (x << (32 - c)))
+
+#define DIGEST_NAME_MD5 "MD5"
+#define DIGEST_NAME_SHA256 "SHA256"
+
 enum e_digest_flags
 {
 	FLAG_DIGEST_ECHO = 1 << 0,
@@ -34,6 +40,8 @@ static struct argp_option digest_options[] __attribute__((used)) = {
 
 int		digest_parser(int argc, char **argv, t_conf *conf);
 void	digest_cleaner(t_conf *conf);
+void	digest_print_result(char *result, t_conf_digest *conf_digest, const char *digester_name, char *source_name, int input_type);
+int		digest_add_to_input(char **input, unsigned char *buffer, size_t bytes_read);
 
 #include "md5/md5.h"
 #include "sha256/sha256.h"

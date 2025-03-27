@@ -6,11 +6,6 @@ static void	fill_words(u_int32_t *words, const unsigned char *block)
 		words[i] = block[i * 4] | (block[i * 4 + 1] << 8) | (block[i * 4 + 2] << 16) | (block[i * 4 + 3] << 24);
 }
 
-static u_int32_t	md5_rotate_left(u_int32_t x, u_int32_t c)
-{
-	return ((x << c) | (x >> (32 - c)));
-}
-
 static void	md5_process_complete_block(t_md5 *md5, const unsigned char *block)
 {
 	u_int32_t	words[16];
@@ -49,7 +44,7 @@ static void	md5_process_complete_block(t_md5 *md5, const unsigned char *block)
 		a = d;
 		d = c;
 		c = b;
-		b += md5_rotate_left(f, MD5_SHIFTS[i]);
+		b += ROTL(f, MD5_SHIFTS[i]);
 	}
 	md5->hash[0] += a;
 	md5->hash[1] += b;
@@ -81,7 +76,7 @@ static void	md5_process_last_block(t_md5 *md5, const unsigned char *block, size_
 		padded_block[0] = 0x80;
 
 	u_int64_t initial_size_bits = md5->data_size * 8;
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < 8; i++) //md5 -> little endian
 		padded_block[MD5_BLOCK_SIZE - 8 + i] = (initial_size_bits >> (i * 8)) & 0xFF;
 	md5_process_complete_block(md5, padded_block);
 }
@@ -93,7 +88,7 @@ static char	*md5_get_hash_str(t_md5 *md5)
 	hash_str = calloc(33, sizeof(char));
 	if (!hash_str)
 		return (perror_ptr());
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++) //md5 -> little endian
 	{
 		for (int j = 0; j < 4; j++)
 			sprintf(hash_str + (i * 8 + j * 2), "%02x", (md5->hash[i] >> (j * 8)) & 0xFF);
