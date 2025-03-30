@@ -21,7 +21,7 @@ void	digest_print_result(char *result, t_conf_digest *conf_digest, const char *d
 					write(STDOUT_FILENO, "(\"", 2);
 					write(STDOUT_FILENO, source_name, conf_digest->stdin_size);
 					write(STDOUT_FILENO, "\")= ", 4);
-					write(STDOUT_FILENO, result, 32);
+					write(STDOUT_FILENO, result, strlen(result));
 					write(STDOUT_FILENO, "\n", 1);
 				}
 			}

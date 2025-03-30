@@ -39,10 +39,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 			break;
 		case ARGP_KEY_ARG:
 			if (add_file_to_conf(conf, arg))
-			{
-				conf->unrecoverable_error = 1;
 				return (1);
-			}
 			break;
 		case ARGP_KEY_END:
 			break;

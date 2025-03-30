@@ -21,7 +21,6 @@ int	sha256_executor(t_conf *conf)
 			{
 				if (input)
 					free(input);
-				conf_digest->unrecoverable_error = 1;
 				return (1);
 			}
 			total_bytes += bytes_read;
@@ -32,7 +31,6 @@ int	sha256_executor(t_conf *conf)
 		{
 			if (input)
 				free(input);
-			conf_digest->unrecoverable_error = 1;
 			return (1);
 		}
 		digest_print_result(result, conf_digest, DIGEST_NAME_SHA256, input, INPUT_DIGEST_TYPE_STDIN);
@@ -47,7 +45,7 @@ int	sha256_executor(t_conf *conf)
 		memset(buffer, 0, SHA256_BLOCK_SIZE);
 		result = sha256_process(&sha256, (unsigned char *)conf_digest->string, strlen(conf_digest->string), 1);
 		if (!result)
-			return (conf_digest->unrecoverable_error = 1, 1);
+			return (1);
 		digest_print_result(result, conf_digest, DIGEST_NAME_SHA256, conf_digest->string, INPUT_DIGEST_TYPE_STRING);
 		free(result);
 		result = NULL;
@@ -80,10 +78,7 @@ int	sha256_executor(t_conf *conf)
 			}
 			close(fd);
 			if (!result)
-			{
-				conf_digest->unrecoverable_error = 1;
 				return (1);
-			}
 			digest_print_result(result, conf_digest, DIGEST_NAME_SHA256, (char *)current->data, INPUT_DIGEST_TYPE_FILE);
 			free(result);
 			result = NULL;

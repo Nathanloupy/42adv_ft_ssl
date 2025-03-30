@@ -25,7 +25,6 @@ enum e_digest_input_type
 
 typedef struct s_conf_digest {
 	int		recoverable_error;
-	int		unrecoverable_error;
 	int		flags;
 	char	*string;
 	t_list	*files;
@@ -42,7 +41,7 @@ static struct argp_option digest_options[] __attribute__((used)) = {
 
 int		digest_parser(int argc, char **argv, t_conf *conf);
 void	digest_cleaner(t_conf *conf);
-int		digest_error(t_conf *conf, int recoverable);
+int		digest_recoverable_error(t_conf *conf);
 void	digest_print_result(char *result, t_conf_digest *conf_digest, const char *digester_name, char *source_name, int input_type);
 int		digest_add_to_input(char **input, unsigned char *buffer, size_t bytes_read, size_t total_bytes);
 

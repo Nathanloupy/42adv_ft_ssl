@@ -1,13 +1,10 @@
 #include "commons.h"
 
-int	digest_error(t_conf *conf, int recoverable)
+int	digest_recoverable_error(t_conf *conf)
 {
 	t_conf_digest	*digest = (t_conf_digest *)conf;
 
-	if (recoverable)
-		return (digest->recoverable_error);
-	else
-		return (digest->unrecoverable_error);
+	return (digest->recoverable_error);
 }
 
 int	digest_add_to_input(char **input, unsigned char *buffer, size_t bytes_read, size_t total_bytes)

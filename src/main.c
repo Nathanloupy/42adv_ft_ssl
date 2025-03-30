@@ -1,6 +1,6 @@
 #include "commons.h"
 
-static int	exec_routine(t_conf *conf, int argc, char **argv, int *unrecoverable_error)
+static int	exec_routine(t_conf *conf, int argc, char **argv)
 {
 	memset(conf, 0, sizeof(t_conf));
 	for (int i = 0; HANDLERS[i].name != NULL; i++)
@@ -8,19 +8,11 @@ static int	exec_routine(t_conf *conf, int argc, char **argv, int *unrecoverable_
 		if (strcmp(argv[0], HANDLERS[i].name) != 0)
 			continue;
 		if (HANDLERS[i].parser(argc, argv, conf))
-		{
-			if (unrecoverable_error)
-				*unrecoverable_error = HANDLERS[i].error(conf, 0);
 			return (HANDLERS[i].cleaner(conf), 1);
-		}
 		if (HANDLERS[i].executor(conf))
-		{
-			if (unrecoverable_error)
-				*unrecoverable_error = HANDLERS[i].error(conf, 0);
 			return (HANDLERS[i].cleaner(conf), 1);
-		}
 		HANDLERS[i].cleaner(conf);
-		return (HANDLERS[i].error(conf, 1));
+		return (HANDLERS[i].error(conf));
 	}
 	print_commands(argv[0], 1);
 	return (1);
@@ -45,8 +37,7 @@ static int	process_command(t_conf *conf, char *command)
 		return (wordfree(&p), perror_int());
 	else if (pid == 0)
 	{
-		int test = 0;
-		status = exec_routine(conf, p.we_wordc, p.we_wordv, &test);
+		status = exec_routine(conf, p.we_wordc, p.we_wordv);
 		wordfree(&p);
 		free(command);
 		exit(status);
@@ -99,7 +90,7 @@ int main(int argc, char **argv)
 	t_conf conf;
 
 	if (argc >= 2)
-		return (exec_routine(&conf, argc - 1, argv + 1, NULL));
+		return (exec_routine(&conf, argc - 1, argv + 1));
 	else
 		return (loop_commands(&conf));
 }

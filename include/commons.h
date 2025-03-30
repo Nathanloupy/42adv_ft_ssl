@@ -26,7 +26,7 @@ typedef struct s_handler {
 	int						(*parser)(int argc, char **argv, t_conf *conf);
 	int						(*executor)(t_conf *conf);
 	void					(*cleaner)(t_conf *conf);
-	int						(*error)(t_conf *conf, int recoverable);
+	int						(*error)(t_conf *conf);
 }	t_handler;
 
 typedef union u_conf {
@@ -41,7 +41,7 @@ static const t_handler HANDLERS[] = {
 		.parser = digest_parser,
 		.executor = md5_executor,
 		.cleaner = digest_cleaner,
-		.error = digest_error
+		.error = digest_recoverable_error
 	},
 	{
 		.name = "sha256",
@@ -49,7 +49,7 @@ static const t_handler HANDLERS[] = {
 		.parser = digest_parser,
 		.executor = sha256_executor,
 		.cleaner = digest_cleaner,
-		.error = digest_error
+		.error = digest_recoverable_error
 	},
 	{
 		.name = NULL,
