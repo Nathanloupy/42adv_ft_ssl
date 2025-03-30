@@ -37,7 +37,10 @@ static int	process_command(t_conf *conf, char *command)
 		return (wordfree(&p), perror_int());
 	else if (pid == 0)
 	{
-		status = exec_routine(conf, p.we_wordc, p.we_wordv);
+		if (p.we_wordc == 0)
+			status = 0;
+		else
+			status = exec_routine(conf, p.we_wordc, p.we_wordv);
 		wordfree(&p);
 		free(command);
 		exit(status);
