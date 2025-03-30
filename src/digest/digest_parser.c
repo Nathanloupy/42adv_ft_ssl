@@ -39,7 +39,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 			break;
 		case ARGP_KEY_ARG:
 			if (add_file_to_conf(conf, arg))
+			{
+				conf->unrecoverable_error = 1;
 				return (1);
+			}
 			break;
 		case ARGP_KEY_END:
 			break;
@@ -54,5 +57,5 @@ int digest_parser(int argc, char **argv, t_conf *conf)
 	t_conf_digest *conf_digest = (t_conf_digest *)conf;
 	memset(conf_digest, 0, sizeof(t_conf_digest));
 	struct argp argp = {digest_options, parse_opt, "[FILE...]", "FILE... files to digest (default is stdin)", NULL, NULL, NULL};
-	return (argp_parse(&argp, argc, argv, 0, 0, conf_digest));
+	return (argp_parse(&argp, argc, argv, ARGP_NO_EXIT, 0, conf_digest));
 }

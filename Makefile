@@ -1,20 +1,22 @@
 # Makefile for ft_ssl
 
 CC = cc
-CCFLAGS = -Wall -Wextra -Werror
+CCFLAGS = -Wall -Wextra -Werror -lreadline
 
 NAME = ft_ssl
 BUILD_DIR = bin
 NAME_DIR = $(addprefix $(BUILD_DIR)/, $(NAME))
 
-INCLUDES = -I./include/ -I./include/digest/ -I./include/utils/
+INCLUDES = -I./include/ -I./include/utils/ -I./include/digest/ -I./include/cipher/
 
 FILES_MAIN = main.c
 
 FILES_UTILS = print_commands.c \
 				print_block.c \
 				list.c \
-				errors.c
+				errors.c \
+				get_next_line.c \
+				get_next_line_utils.c
 
 FILES_DIGEST = digest_parser.c \
 				digest_cleaner.c \
@@ -46,7 +48,7 @@ all: $(NAME)
 
 $(NAME): $(OBJS)
 	@mkdir -p $(BUILD_DIR)
-	@$(CC) $(CCFLAGS) $(INCLUDES) $(OBJS) -o $(NAME_DIR) -lm
+	@$(CC) $(CCFLAGS) $(INCLUDES) $(OBJS) -o $(NAME_DIR)
 
 clean:
 	@rm -f $(OBJS)

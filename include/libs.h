@@ -6,3 +6,9 @@
 #include <unistd.h>
 #include <argp.h>
 #include <fcntl.h>
+#include <wordexp.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <stddef.h>

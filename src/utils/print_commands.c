@@ -1,10 +1,10 @@
 #include "commons.h"
 
-void	print_commands(char *command)
+void	print_commands(char *command, int is_invalid)
 {
-	if (!command)
+	if (!command && is_invalid)
 		fprintf(stderr, "ft_ssl: Invalid command ''.\n\n");
-	else
+	else if (command && is_invalid)
 		fprintf(stderr, "ft_ssl: Invalid command '%s'.\n\n", command);
 	fprintf(stderr, "Message Digest commands\n");
 	for (int i = 0; HANDLERS[i].name != NULL; i++)
