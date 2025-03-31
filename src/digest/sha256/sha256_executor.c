@@ -65,7 +65,7 @@ int	sha256_executor(t_conf *conf)
 				conf_digest->recoverable_error = 1;
 				continue;
 			}
-			while ((bytes_read = read(fd, buffer, MD5_BLOCK_SIZE)) > 0)
+			while ((bytes_read = read(fd, buffer, SHA256_BLOCK_SIZE)) > 0)
 			{
 				if (bytes_read == SHA256_BLOCK_SIZE)
 					sha256_process(&sha256, buffer, bytes_read, 0);
