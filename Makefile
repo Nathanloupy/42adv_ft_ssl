@@ -25,7 +25,9 @@ FILES_DIGEST = digest_parser.c \
 				md5/md5.c \
 				md5/md5_executor.c \
 				sha256/sha256.c \
-				sha256/sha256_executor.c
+				sha256/sha256_executor.c \
+				whirlpool/whirlpool.c \
+				whirlpool/whirlpool_executor.c
 
 SRCS_MAIN = $(addprefix src/, $(FILES_MAIN))
 

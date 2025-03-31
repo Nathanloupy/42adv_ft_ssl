@@ -7,6 +7,7 @@
 
 #define DIGEST_NAME_MD5 "MD5"
 #define DIGEST_NAME_SHA256 "SHA256"
+#define DIGEST_NAME_WHIRLPOOL "WHIRLPOOL"
 
 enum e_digest_flags
 {
@@ -47,3 +48,4 @@ int		digest_add_to_input(char **input, unsigned char *buffer, size_t bytes_read,
 
 #include "md5/md5.h"
 #include "sha256/sha256.h"
+#include "whirlpool/whirlpool.h"

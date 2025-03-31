@@ -52,6 +52,14 @@ static const t_handler HANDLERS[] = {
 		.error = digest_recoverable_error
 	},
 	{
+		.name = "whirlpool",
+		.type = DIGEST,
+		.parser = digest_parser,
+		.executor = whirlpool_executor,
+		.cleaner = digest_cleaner,
+		.error = digest_recoverable_error
+	},
+	{
 		.name = NULL,
 		.type = VOID,
 		.parser = NULL,
