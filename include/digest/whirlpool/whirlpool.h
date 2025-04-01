@@ -6,8 +6,8 @@
 #define WHIRLPOOL_ROUNDS 10
 
 typedef struct s_whirlpool {
-	size_t			data_size;
-	u_int64_t		hash[8];
+	u_int64_t	data_size;
+	u_int8_t	hash_matrix[8][8];
 }	t_whirlpool;
 
 /* WHIRLPOOL - MAIN */
