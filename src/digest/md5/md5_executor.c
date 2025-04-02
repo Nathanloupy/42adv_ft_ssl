@@ -60,7 +60,7 @@ int	md5_executor(t_conf *conf)
 			int fd = open(current->data, O_RDONLY);
 			if (fd == -1)
 			{
-				perror_int();
+				perror(current->data);
 				current = current->next;
 				conf_digest->recoverable_error = 1;
 				continue;
