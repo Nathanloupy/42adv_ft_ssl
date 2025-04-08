@@ -1,7 +1,5 @@
 #include "commons.h"
 
-static u_int8_t g_round_constants[10][8][8];
-
 static const u_int8_t g_SBOX[16][16] = {
 	{0x18, 0x23, 0xC6, 0xE8, 0x87, 0xB8, 0x01, 0x4F, 0x36, 0xA6, 0xD2, 0xF5, 0x79, 0x6F, 0x91, 0x52},
 	{0x60, 0xBC, 0x9B, 0x8E, 0xA3, 0x0C, 0x7B, 0x35, 0x1D, 0xE0, 0xD7, 0xC2, 0x2E, 0x4B, 0xFE, 0x57},
@@ -32,13 +30,35 @@ static const u_int8_t g_C_MATRIX[8][8] = {
 	{0x01, 0x04, 0x01, 0x08, 0x05, 0x02, 0x09, 0x01}
 };
 
-static const u_int16_t g_POLYNOMIAL = 0x11D;
+static void print_matrix_hex(u_int8_t (*matrix)[8][8])
+{
+	for (int i = 0; i < 8; i++)
+	{
+		for (int j = 0; j < 8; j++)
+			printf("%02x ", (*matrix)[i][j]);
+		printf("\n");
+	}
+	printf("\n");
+}
+
+void print_block_hex(const unsigned char *block)
+{
+	for (int i = 0; i < WHIRLPOOL_BLOCK_SIZE; i++)
+	{
+		printf("%02x ", block[i]);
+		if ((i + 1) % 8 == 0)
+			printf("\n");
+	}
+	printf("\n");
+}
 
 static void convert_block_to_matrix(u_int8_t (*matrix)[8][8], const unsigned char *block)
 {
 	for (int i = 0; i < 8; i++)
+	{
 		for (int j = 0; j < 8; j++)
 			(*matrix)[i][j] = block[i * 8 + j];
+	}
 }
 
 static void assign_matrix_to_matrix(u_int8_t (*matrix_dest)[8][8], const u_int8_t (*matrix_src)[8][8])
@@ -46,26 +66,6 @@ static void assign_matrix_to_matrix(u_int8_t (*matrix_dest)[8][8], const u_int8_
 	for (int i = 0; i < 8; i++)
 		for (int j = 0; j < 8; j++)
 			(*matrix_dest)[i][j] = (*matrix_src)[i][j];
-}
-
-static void initialize_round_constants(void)
-{
-	memset(g_round_constants, 0, sizeof(g_round_constants));
-
-	u_int8_t index;
-	u_int8_t row;
-	u_int8_t col;
-
-	for (int r = 1; r < 10; r++)
-	{
-		for (int j = 0; j < 8; j++)
-		{
-			index = 8 * (r - 1) + j;
-			row = (index >> 4) & 0x0F;
-			col = index & 0x0F;
-			g_round_constants[r - 1][0][j] = g_SBOX[row][col];
-		}
-	}
 }
 
 static void sub_bytes(u_int8_t (*matrix)[8][8])
@@ -88,10 +88,10 @@ static void shift_columns(u_int8_t (*matrix)[8][8])
 {
 	u_int8_t result[8][8];
 
+	assign_matrix_to_matrix(&result, matrix);
 	for (int i = 0; i < 8; i++)
 		for (int j = 0; j < 8; j++)
 			result[(i + j) % 8][j] = (*matrix)[i][j];
-	
 	assign_matrix_to_matrix(matrix, &result);
 }
 
@@ -99,31 +99,31 @@ static u_int8_t gf_multiply(u_int8_t a, u_int8_t b)
 {
 	u_int8_t p = 0;
 	u_int8_t high_bit;
-
+	
 	for (int i = 0; i < 8; i++)
 	{
-		if ((b & 1) == 0x01)
+		if (b & 1)
 			p ^= a;
 		high_bit = (a & 0x80);
 		a <<= 1;
-		if (high_bit == 0x80)
-			a ^= (g_POLYNOMIAL & 0xFF);
+		if (high_bit)
+			a ^= 0x1D;
 		b >>= 1;
 	}
-	return p;
+	return (p);
 }
 
 static void mix_rows(u_int8_t (*matrix)[8][8])
 {
 	u_int8_t result[8][8];
 
+	memset(result, 0, sizeof(result));
 	for (int i = 0; i < 8; i++)
 	{
 		for (int j = 0; j < 8; j++)
 		{
-			result[i][j] = 0;
 			for (int k = 0; k < 8; k++)
-				result[i][j] ^= gf_multiply(g_C_MATRIX[i][k], (*matrix)[i][k]);
+				result[i][j] ^= gf_multiply((*matrix)[i][k], g_C_MATRIX[i][k]);
 		}
 	}
 	assign_matrix_to_matrix(matrix, &result);
@@ -136,51 +136,68 @@ static void add_key(u_int8_t (*matrix_dest)[8][8], const u_int8_t (*matrix_src)[
 			(*matrix_dest)[i][j] ^= (*matrix_src)[i][j];
 }
 
-static void expand_key(u_int8_t (*round_keys)[11][8][8], const u_int8_t (*key)[8][8])
+static void add_rc(u_int8_t (*key)[8][8], int r)
 {
-	initialize_round_constants();
-	assign_matrix_to_matrix(&((*round_keys)[0]), key);
+	u_int8_t rc[8][8];
+	u_int8_t index = 0;
+	u_int8_t row = 0;
+	u_int8_t col = 0;
 
-	for (int r = 1; r < 11; r++)
+	if (r == 0)
+		return;
+	memset(rc, 0, sizeof(rc));
+	for (int j = 0; j < 8; j++)
 	{
-		u_int8_t K[8][8];
-		assign_matrix_to_matrix(&K, &((*round_keys)[r - 1]));
-		sub_bytes(&K);
-		shift_columns(&K);
-		mix_rows(&K);
-		add_key(&K, &(g_round_constants[r - 1]));
-		assign_matrix_to_matrix(&((*round_keys)[r]), &K);
+		index = 8 * (r - 1) + j;
+		row = index >> 4 & 0x0F;
+		col = index & 0x0F;
+		rc[0][j] = g_SBOX[row][col];
 	}
+	for (int i = 0; i < 8; i++)
+		for (int j = 0; j < 8; j++)
+			(*key)[i][j] ^= rc[i][j];
 }
 
-static void whirlpool_process_complete_block(t_whirlpool *whirlpool, const unsigned char *block)
+static void expand_key(u_int8_t (*key)[8][8], int r)
 {
-	u_int8_t key[8][8];
+	sub_bytes(key);
+	shift_columns(key);
+	mix_rows(key);
+	add_rc(key, r);
+}
+
+static void whirlpool_process_complete_block(t_whirlpool *whirlpool, const unsigned char *block) //TODO: verify, check
+{
+	u_int8_t cstate[8][8]; //block labelled CState
+	u_int8_t kstate[8][8]; //key labelled KState
 	u_int8_t state[8][8];
-	u_int8_t round_keys[11][8][8];
 
-	memset(key, 0, sizeof(key));
-	memset(state, 0, sizeof(state));
-	memset(round_keys, 0, sizeof(round_keys));
 
-	convert_block_to_matrix(&state, block);
-	assign_matrix_to_matrix(&key, &whirlpool->hash_matrix);
+	memset(cstate, 0, sizeof(cstate));
+	memset(kstate, 0, sizeof(kstate));
 
-	expand_key(&round_keys, &key);
-	add_key(&state, &(round_keys[0]));
+	convert_block_to_matrix(&cstate, block);
+	assign_matrix_to_matrix(&state, &cstate);
+	assign_matrix_to_matrix(&kstate, &whirlpool->hash_matrix);
+
+	printf("cstate:\n");
+	print_matrix_hex(&cstate);
+
+	add_key(&state, &kstate);
 
 	for (int r = 1; r < 11; r++)
 	{
 		sub_bytes(&state);
 		shift_columns(&state);
 		mix_rows(&state);
-		add_key(&state, &round_keys[r]);
+		expand_key(&kstate, r);
+		add_key(&state, &kstate);
 	}
 
 	u_int8_t result[8][8];
 	for (int i = 0; i < 8; i++)
 		for (int j = 0; j < 8; j++)
-			result[i][j] = state[i][j] ^ whirlpool->hash_matrix[i][j] ^ block[i * 8 + j];
+			result[i][j] = state[i][j] ^ whirlpool->hash_matrix[i][j] ^ cstate[i][j];
 	assign_matrix_to_matrix(&whirlpool->hash_matrix, &result);
 }
 
@@ -192,7 +209,7 @@ static void whirlpool_process_last_block(t_whirlpool *whirlpool, const unsigned 
 	
 	if (block) 
 	{
-		if (remaining >= WHIRLPOOL_BLOCK_SIZE - 32) /* 32 bytes = 256 bits for length */
+		if (remaining > WHIRLPOOL_BLOCK_SIZE - 32) /* 32 bytes = 256 bits for length */
 		{
 			memcpy(padded_block, block, remaining);
 			padded_block[remaining] = 0x80;
@@ -208,12 +225,13 @@ static void whirlpool_process_last_block(t_whirlpool *whirlpool, const unsigned 
 	else
 		padded_block[0] = 0x80;
 	
+	u_int64_t initial_size_bits = whirlpool->data_size * 8;
 	for (int i = 0; i < 32; i++)
 	{
 		if (i < 24)
 			padded_block[WHIRLPOOL_BLOCK_SIZE - 32 + i] = 0;
 		else
-			padded_block[WHIRLPOOL_BLOCK_SIZE - 32 + i] = (whirlpool->data_size >> ((31 - i) * 8)) & 0xFF;
+			padded_block[WHIRLPOOL_BLOCK_SIZE - 32 + i] = (initial_size_bits >> ((31 - i) * 8)) & 0xFF;
 	}	
 	whirlpool_process_complete_block(whirlpool, padded_block);
 }
@@ -221,15 +239,6 @@ static void whirlpool_process_last_block(t_whirlpool *whirlpool, const unsigned 
 static char *whirlpool_get_hash_str(t_whirlpool *whirlpool)
 {
 	char *hash_str = NULL;
-
-	for (int i = 0; i < 8; i++)
-	{
-		printf("hash_matrix[%d] = ", i);
-		for (int j = 0; j < 8; j++)	
-			printf("%02x ", whirlpool->hash_matrix[i][j]);
-		printf("\n");
-	}
-	printf("\n");
 
 	hash_str = calloc(129, sizeof(char));
 	if (!hash_str)
