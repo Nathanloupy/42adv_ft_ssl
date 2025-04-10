@@ -1,5 +1,5 @@
 run: build
-	docker run -d --rm --name ft_ssl -v $(shell pwd)/../../42adv_ft_ssl/:/app ft_ssl
+	docker run -d --name ft_ssl -v $(shell pwd)/../../42adv_ft_ssl/:/app ft_ssl
 
 build:
 	docker build -t ft_ssl .
@@ -11,6 +11,7 @@ stop:
 	docker stop ft_ssl
 
 fclean: stop
+	docker rm ft_ssl
 	docker image rm ft_ssl
 
 re: run build exec stop fclean
