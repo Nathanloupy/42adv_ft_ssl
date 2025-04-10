@@ -1,5 +1,5 @@
 run: build
-	docker run -d --name ft_ssl -v $(shell pwd)/../../42adv_ft_ssl/:/app ft_ssl
+	docker run -d --name ft_ssl -v $(shell pwd)/../:/app ft_ssl
 
 build:
 	docker build -t ft_ssl .
