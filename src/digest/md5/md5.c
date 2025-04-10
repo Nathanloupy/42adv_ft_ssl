@@ -59,7 +59,7 @@ static void	md5_process_last_block(t_md5 *md5, const unsigned char *block, size_
 	memset(padded_block, 0, MD5_BLOCK_SIZE);
 	if (block) 
 	{
-		if (remaining >= MD5_BLOCK_SIZE - 8)
+		if (remaining + 1 > MD5_BLOCK_SIZE - 8)
 		{
 			memcpy(padded_block, block, remaining);
 			padded_block[remaining] = 0x80;

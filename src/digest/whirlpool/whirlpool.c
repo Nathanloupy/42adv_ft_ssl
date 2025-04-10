@@ -201,7 +201,7 @@ static void whirlpool_process_last_block(t_whirlpool *whirlpool, const unsigned 
 	
 	if (block) 
 	{
-		if (remaining > WHIRLPOOL_BLOCK_SIZE - 32) /* 32 bytes = 256 bits for length */
+		if (remaining + 1 > WHIRLPOOL_BLOCK_SIZE - 32) /* 32 bytes = 256 bits for length */
 		{
 			memcpy(padded_block, block, remaining);
 			padded_block[remaining] = 0x80;

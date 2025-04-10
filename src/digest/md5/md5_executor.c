@@ -7,7 +7,7 @@ int	md5_executor(t_conf *conf)
 	char			*result = NULL;
 	char			*input = NULL;
 	unsigned char	buffer[MD5_BLOCK_SIZE];
-	size_t			bytes_read;
+	ssize_t			bytes_read;
 
 	if (conf_digest->flags & FLAG_DIGEST_ECHO || (!(conf_digest->flags & FLAG_DIGEST_STRING) && lstsize(conf_digest->files) == 0))
 	{
@@ -24,6 +24,11 @@ int	md5_executor(t_conf *conf)
 				return (1);
 			}
 			total_bytes += bytes_read;
+		}
+		if (bytes_read == -1)
+		{
+			perror(FT_SSL_NAME);
+			return (1);
 		}
 		result = md5_process(&md5, buffer, total_bytes, 1);
 		conf_digest->stdin_size = total_bytes;
@@ -71,6 +76,13 @@ int	md5_executor(t_conf *conf)
 					md5_process(&md5, buffer, bytes_read, 0);
 				else
 					result = md5_process(&md5, buffer, bytes_read, 1);
+			}
+			if (bytes_read == -1)
+			{
+				perror(current->data);
+				current = current->next;
+				conf_digest->recoverable_error = 1;
+				continue;
 			}
 			if (bytes_read == 0 && !result)
 			{

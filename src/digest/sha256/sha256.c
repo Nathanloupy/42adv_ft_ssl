@@ -67,7 +67,7 @@ static void	sha256_process_last_block(t_sha256 *sha256, const unsigned char *blo
 	memset(padded_block, 0, SHA256_BLOCK_SIZE);
 	if (block) 
 	{
-		if (remaining >= SHA256_BLOCK_SIZE - 8)
+		if (remaining + 1 > SHA256_BLOCK_SIZE - 8)
 		{
 			memcpy(padded_block, block, remaining);
 			padded_block[remaining] = 0x80;
