@@ -2,7 +2,6 @@
 
 #include "commons.h"
 
-typedef struct s_conf_cipher {
-	int		exit_status;
-	int		flags;
-}	t_conf_cipher;
+#define CIPHER_NAME_BASE64 "BASE64"
+
+#include "base64/base64.h"

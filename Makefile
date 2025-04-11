@@ -29,11 +29,18 @@ FILES_DIGEST = digest_parser.c \
 				whirlpool/whirlpool.c \
 				whirlpool/whirlpool_executor.c
 
+FILES_CIPHER = base64/base64.c \
+				base64/base64_executor.c \
+				base64/base64_parser.c \
+				base64/base64_cleaner.c
+
 SRCS_MAIN = $(addprefix src/, $(FILES_MAIN))
 
 SRCS_UTILS = $(addprefix src/utils/, $(FILES_UTILS))
 
 SRCS_DIGEST = $(addprefix src/digest/, $(FILES_DIGEST))
+
+SRCS_CIPHER = $(addprefix src/cipher/, $(FILES_CIPHER))
 
 OBJS_MAIN = $(SRCS_MAIN:.c=.o)
 
@@ -41,7 +48,9 @@ OBJS_UTILS = $(SRCS_UTILS:.c=.o)
 
 OBJS_DIGEST = $(SRCS_DIGEST:.c=.o)
 
-OBJS = $(OBJS_MAIN) $(OBJS_UTILS) $(OBJS_DIGEST)
+OBJS_CIPHER = $(SRCS_CIPHER:.c=.o)
+
+OBJS = $(OBJS_MAIN) $(OBJS_UTILS) $(OBJS_DIGEST) $(OBJS_CIPHER)
 
 %.o: %.c
 	@$(CC) $(CCFLAGS) $(INCLUDES) -c $< -o $@
