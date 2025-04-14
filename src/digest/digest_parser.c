@@ -1,5 +1,7 @@
 #include "commons.h"
 
+static struct argp digest_argp = {digest_options, digest_parse_opt, "[FILE...]", "FILE... files to digest (default is stdin)", NULL, NULL, NULL};
+
 static int	add_file_to_conf(t_conf_digest *conf_digest, char *file)
 {
 	t_list	*new;
@@ -18,7 +20,7 @@ static int	add_file_to_conf(t_conf_digest *conf_digest, char *file)
 	return (0);
 }
 
-static error_t parse_opt(int key, char *arg, struct argp_state *state)
+error_t digest_parse_opt(int key, char *arg, struct argp_state *state)
 {
 	t_conf_digest *conf = state->input;
 
@@ -37,6 +39,14 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 			conf->flags |= FLAG_DIGEST_STRING;
 			conf->string = arg;
 			break;
+		case DIGEST_OPTION_HELP:
+			argp_help(&digest_argp, stderr, ARGP_HELP_STD_HELP, state->argv[0]);
+			conf->flags |= FLAG_DIGEST_HELP;
+			return (0);
+		case DIGEST_OPTION_USAGE:
+			argp_help(&digest_argp, stderr, ARGP_HELP_USAGE, state->argv[0]);
+			conf->flags |= FLAG_DIGEST_USAGE;
+			return (0);
 		case ARGP_KEY_ARG:
 			if (add_file_to_conf(conf, arg))
 				return (1);
@@ -53,6 +63,5 @@ int digest_parser(int argc, char **argv, t_conf *conf)
 {
 	t_conf_digest *conf_digest = (t_conf_digest *)conf;
 	memset(conf_digest, 0, sizeof(t_conf_digest));
-	struct argp argp = {digest_options, parse_opt, "[FILE...]", "FILE... files to digest (default is stdin)", NULL, NULL, NULL};
-	return (argp_parse(&argp, argc, argv, ARGP_NO_EXIT, 0, conf_digest));
+	return (argp_parse(&digest_argp, argc, argv, ARGP_NO_EXIT | ARGP_NO_HELP, 0, conf_digest));
 }

@@ -9,6 +9,8 @@ int	md5_executor(t_conf *conf)
 	unsigned char	buffer[MD5_BLOCK_SIZE];
 	ssize_t			bytes_read;
 
+	if (conf_digest->flags & FLAG_DIGEST_HELP || conf_digest->flags & FLAG_DIGEST_USAGE)
+		return (0);
 	if (conf_digest->flags & FLAG_DIGEST_ECHO || (!(conf_digest->flags & FLAG_DIGEST_STRING) && lstsize(conf_digest->files) == 0))
 	{
 		size_t			total_bytes = 0;
