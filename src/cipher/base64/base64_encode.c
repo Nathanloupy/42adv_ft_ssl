@@ -30,7 +30,7 @@ static void	base64_encode_remaining(char (*encoded)[4], const char *buffer, size
 
 char	*base64_encode(const char *buffer, size_t size)
 {
-	int		remaining;
+	size_t	remaining;
 	char	*encoded;
 	char	temp[4];
 	
