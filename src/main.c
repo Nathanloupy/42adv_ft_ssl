@@ -14,7 +14,10 @@ static int	exec_routine(t_conf *conf, int argc, char **argv)
 		HANDLERS[i].cleaner(conf);
 		return (HANDLERS[i].error(conf));
 	}
-	print_commands(argv[0], 1);
+	if (strcmp(argv[0], "help"))
+		print_commands(argv[0], 1);
+	else
+		print_commands(argv[0], 0);
 	return (1);
 }
 
@@ -79,7 +82,7 @@ static int	loop_commands(t_conf *conf)
 			return (0);
 		else if (!strcmp(command, "exit\n") || !strcmp(command, "exit"))
 			return (free(command), 0);
-		else if (!strcmp(command, "help\n") || !strcmp(command, "exit"))
+		else if (!strcmp(command, "help\n") || !strcmp(command, "help"))
 			print_commands(NULL, 0);
 		else if (process_command(conf, command))
 			return (free(command), 1);
