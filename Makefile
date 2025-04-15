@@ -29,7 +29,8 @@ FILES_DIGEST = digest_parser.c \
 				whirlpool/whirlpool.c \
 				whirlpool/whirlpool_executor.c
 
-FILES_CIPHER = base64/base64.c \
+FILES_CIPHER = base64/base64_encode.c \
+				base64/base64_decode.c \
 				base64/base64_executor.c \
 				base64/base64_parser.c \
 				base64/base64_cleaner.c

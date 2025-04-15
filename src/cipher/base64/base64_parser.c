@@ -1,6 +1,8 @@
 #include "commons.h"
 
-static error_t parse_opt(int key, char *arg, struct argp_state *state)
+static struct argp base64_argp = {base64_parse_opt, parse_opt, "[FILE...]", "FILE... files to digest (default is stdin)", NULL, NULL, NULL};
+
+error_t base64_parse_opt(int key, char *arg, struct argp_state *state)
 {
 	t_conf_base64 *conf = state->input;
 
@@ -20,6 +22,14 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 			conf->flags |= FLAG_BASE64_OUTPUT_FILE;
 			conf->output_file = arg;
 			break;
+		case BASE64_OPTION_HELP:
+			argp_help(&base64_argp, stderr, ARGP_HELP_STD_HELP, state->argv[0]);
+			conf->flags |= FLAG_BASE64_HELP;
+			return (0);
+		case BASE64_OPTION_USAGE:
+			argp_help(&base64_argp, stderr, ARGP_HELP_USAGE, state->argv[0]);
+			conf->flags |= FLAG_BASE64_USAGE;
+			return (0);
 		case ARGP_KEY_ARG:
 			return (ARGP_ERR_UNKNOWN);
 		case ARGP_KEY_END:
@@ -34,6 +44,5 @@ int base64_parser(int argc, char **argv, t_conf *conf)
 {
 	t_conf_base64 *conf_base64 = (t_conf_base64 *)conf;
 	memset(conf_base64, 0, sizeof(t_conf_base64));
-	struct argp argp = {base64_options, parse_opt, "[FILE...]", "FILE... files to digest (default is stdin)", NULL, NULL, NULL};
-	return (argp_parse(&argp, argc, argv, ARGP_NO_EXIT, 0, conf_base64));
+	return (argp_parse(&base64_argp, argc, argv, ARGP_NO_EXIT | ARGP_NO_HELP, 0, conf_base64));
 }
