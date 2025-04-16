@@ -1,7 +1,7 @@
 # Makefile for ft_ssl
 
 CC = cc
-CCFLAGS = -Wall -Wextra -Werror -lreadline
+CCFLAGS = -Wall -Wextra -Werror
 
 NAME = ft_ssl
 BUILD_DIR = bin

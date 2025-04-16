@@ -15,6 +15,21 @@ static int	add_to_input_buffer(char *buffer, size_t size, size_t *input_size, ch
 	return (0);
 }
 
+static int 	write_encoded(char *output, size_t output_size)
+{	
+	for (size_t i = 0; i < output_size; i += BASE64_BLOCK_SIZE)
+	{
+		size_t	remaining = output_size - i;
+		size_t	write_size = remaining < BASE64_BLOCK_SIZE ? remaining : BASE64_BLOCK_SIZE;
+
+		if (write(STDOUT_FILENO, output + i, write_size) == -1)
+			return (-1);
+		if (write(STDOUT_FILENO, "\n", 1) == -1)
+			return (-1);
+	}
+	return (0);
+}
+
 int base64_executor(t_conf *conf)
 {
 	t_conf_base64 *conf_base64 = (t_conf_base64 *)conf;
@@ -35,7 +50,7 @@ int base64_executor(t_conf *conf)
 	}
 	if (conf_base64->flags & FLAG_BASE64_OUTPUT_FILE)
 	{
-		conf_base64->output_fd = open(conf_base64->output_file, O_WRONLY | O_CREAT, 0644);
+		conf_base64->output_fd = open(conf_base64->output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		if (conf_base64->output_fd == -1)
 			return (perror(conf_base64->output_file), 1);
 		if (dup2(conf_base64->output_fd, STDOUT_FILENO) == -1)
@@ -68,9 +83,9 @@ int base64_executor(t_conf *conf)
 	{
 		char	buffer[BASE64_BUFFER_SIZE];
 		ssize_t	bytes_read;
-		size_t	input_size;
+		size_t	input_size = 0;
 		char	*input = NULL;
-		size_t	output_size;
+		size_t	output_size = 0;
 		char	*output = NULL;
 
 		while ((bytes_read = read(STDIN_FILENO, buffer, BASE64_BUFFER_SIZE)) > 0)
@@ -83,7 +98,7 @@ int base64_executor(t_conf *conf)
 		output = base64_encode(input, input_size, &output_size);
 		if (!output)
 			return (free(input), perror_int());
-		if (write(STDOUT_FILENO, output, output_size) == -1)
+		if (write_encoded(output, output_size) == -1)
 			return (free(input), free(output), perror_int());
 		free(input);
 		free(output);
