@@ -48,6 +48,6 @@ char	*base64_encode(const char *buffer, size_t size, size_t *output_size)
 			base64_encode_nbytes(&temp, buffer + i, 3);
 		memcpy(encoded + i * 4 / 3, temp, 4);
 	}
-	*output_size = encoded_size;
+	*output_size = (size + 2) / 3 * 4;
 	return (encoded);
 }

@@ -16,7 +16,7 @@ static int	add_to_input_buffer(char *buffer, size_t size, size_t *input_size, ch
 }
 
 static int 	write_encoded(char *output, size_t output_size)
-{
+{	
 	for (size_t i = 0; i < output_size; i += BASE64_BLOCK_SIZE)
 	{
 		size_t	remaining = output_size - i;
@@ -72,7 +72,7 @@ int base64_executor(t_conf *conf)
 			output = base64_decode(buffer, bytes_read, &output_size);
 			if (!output)
 				return (perror_int());
-			if (write_encoded(output, output_size) == -1)
+			if (write(STDOUT_FILENO, output, output_size) == -1)
 				return (free(output), perror_int());
 			free(output);
 		}
