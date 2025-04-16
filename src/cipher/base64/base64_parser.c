@@ -1,6 +1,6 @@
 #include "commons.h"
 
-static struct argp base64_argp = {base64_parse_opt, parse_opt, "[FILE...]", "FILE... files to digest (default is stdin)", NULL, NULL, NULL};
+static struct argp base64_argp = {base64_parse_opt, parse_opt, "[FILE...]", "FILE... files to digest (default is stdin)", NULL, NULL, NULL}; //TODO: change this
 
 error_t base64_parse_opt(int key, char *arg, struct argp_state *state)
 {

@@ -161,7 +161,7 @@ static void expand_key(u_int8_t (*key)[8][8], int r)
 	add_rc(key, r);
 }
 
-static void whirlpool_process_complete_block(t_whirlpool *whirlpool, const unsigned char *block) //TODO: verify, check
+static void whirlpool_process_complete_block(t_whirlpool *whirlpool, const unsigned char *block)
 {
 	u_int8_t message[8][8];
 	u_int8_t key[8][8];
