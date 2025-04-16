@@ -8,7 +8,7 @@
 #include "get_next_line.h"
 
 typedef struct s_conf_digest	t_conf_digest;
-typedef struct s_conf_cipher	t_conf_cipher;
+typedef struct s_conf_base64	t_conf_base64;
 typedef union u_conf			t_conf;
 
 #include "digest.h"
@@ -31,7 +31,7 @@ typedef struct s_handler {
 
 typedef union u_conf {
 	t_conf_digest	digest;
-	t_conf_cipher	cipher;
+	t_conf_base64	base64;
 }	t_conf;
 
 static const t_handler HANDLERS[] = {
@@ -60,6 +60,14 @@ static const t_handler HANDLERS[] = {
 		.error = digest_recoverable_error
 	},
 	{
+		.name = "base64",
+		.type = CIPHER,
+		.parser = base64_parser,
+		.executor = base64_executor,
+		.cleaner = base64_cleaner,
+		.error = base64_recoverable_error
+	},
+	{
 		.name = NULL,
 		.type = VOID,
 		.parser = NULL,
@@ -72,3 +80,4 @@ static const t_handler HANDLERS[] = {
 /* MAIN - UTILS */
 void	print_commands(char *command, int is_invalid);
 void	print_block(const unsigned char *block, size_t block_size, char format);
+int		is_whitespace(char c);
