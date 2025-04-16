@@ -50,7 +50,7 @@ int base64_executor(t_conf *conf)
 	}
 	if (conf_base64->flags & FLAG_BASE64_OUTPUT_FILE)
 	{
-		conf_base64->output_fd = open(conf_base64->output_file, O_WRONLY | O_CREAT, 0644);
+		conf_base64->output_fd = open(conf_base64->output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		if (conf_base64->output_fd == -1)
 			return (perror(conf_base64->output_file), 1);
 		if (dup2(conf_base64->output_fd, STDOUT_FILENO) == -1)
