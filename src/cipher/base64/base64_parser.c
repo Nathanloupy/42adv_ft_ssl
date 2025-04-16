@@ -1,6 +1,6 @@
 #include "commons.h"
 
-static struct argp base64_argp = {base64_parse_opt, parse_opt, "[FILE...]", "FILE... files to digest (default is stdin)", NULL, NULL, NULL}; //TODO: change this
+static struct argp base64_argp = {base64_options, base64_parse_opt, "[FILE...]", "FILE... files to digest (default is stdin)", NULL, NULL, NULL}; //TODO: change this
 
 error_t base64_parse_opt(int key, char *arg, struct argp_state *state)
 {
@@ -44,5 +44,6 @@ int base64_parser(int argc, char **argv, t_conf *conf)
 {
 	t_conf_base64 *conf_base64 = (t_conf_base64 *)conf;
 	memset(conf_base64, 0, sizeof(t_conf_base64));
+	base64_init(conf_base64);
 	return (argp_parse(&base64_argp, argc, argv, ARGP_NO_EXIT | ARGP_NO_HELP, 0, conf_base64));
 }

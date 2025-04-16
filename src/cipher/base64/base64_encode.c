@@ -28,13 +28,15 @@ static void	base64_encode_remaining(char (*encoded)[4], const char *buffer, size
 		(*encoded)[i] = '=';
 }
 
-char	*base64_encode(const char *buffer, size_t size)
+char	*base64_encode(const char *buffer, size_t size, size_t *output_size)
 {
 	size_t	remaining;
 	char	*encoded;
+	size_t	encoded_size;
 	char	temp[4];
-	
-	encoded = calloc(size * 4 / 3 + 4, sizeof(char));
+
+	encoded_size = size * 4 / 3 + 4;
+	encoded = calloc(encoded_size, sizeof(char));
 	if (!encoded)
 		return (NULL);
 	for (size_t i = 0; i < size; i += 3)
@@ -46,5 +48,6 @@ char	*base64_encode(const char *buffer, size_t size)
 			base64_encode_nbytes(&temp, buffer + i, 3);
 		memcpy(encoded + i * 4 / 3, temp, 4);
 	}
+	*output_size = encoded_size;
 	return (encoded);
 }

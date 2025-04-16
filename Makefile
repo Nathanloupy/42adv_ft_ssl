@@ -11,7 +11,8 @@ INCLUDES = -I./include/ -I./include/utils/ -I./include/digest/ -I./include/ciphe
 
 FILES_MAIN = main.c
 
-FILES_UTILS = print_commands.c \
+FILES_UTILS = utils.c \
+				print_commands.c \
 				print_block.c \
 				list.c \
 				errors.c \
@@ -33,7 +34,8 @@ FILES_CIPHER = base64/base64_encode.c \
 				base64/base64_decode.c \
 				base64/base64_executor.c \
 				base64/base64_parser.c \
-				base64/base64_cleaner.c
+				base64/base64_cleaner.c \
+				base64/base64_utils.c
 
 SRCS_MAIN = $(addprefix src/, $(FILES_MAIN))
 

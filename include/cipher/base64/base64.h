@@ -4,6 +4,8 @@
 
 #define BASE64_ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
+#define BASE64_BUFFER_SIZE 1024
+
 #define BASE64_OPTION_HELP 128
 #define BASE64_OPTION_USAGE 129
 
@@ -30,11 +32,30 @@ enum e_base64_flags
 typedef struct s_conf_base64 {
 	int		flags;
 	char	*input_file;
+	int		input_fd;
 	char	*output_file;
+	int		output_fd;
 }	t_conf_base64;
 
+
+/* BASE64 - PARSER */
 int		base64_parser(int argc, char **argv, t_conf *conf);
 error_t	base64_parse_opt(int key, char *arg, struct argp_state *state);
 
-char	*base64_encode(const char *buffer, size_t size);
-char	*base64_decode(const char *buffer, size_t size);
+/* BASE64 - ENCODE */
+char	*base64_encode(const char *buffer, size_t size, size_t *output_size);
+
+/* BASE64 - DECODE */
+int		base64_check_encoded(const char *buffer, size_t size);
+char	*base64_decode(const char *buffer, size_t size, size_t *output_size);
+
+/* BASE64 - CLEANER */
+void	base64_cleaner(t_conf *conf);
+
+/* BASE64 - EXECUTOR */
+int		base64_executor(t_conf *conf);
+
+/* BASE64 - UTILS */
+void	base64_init(t_conf_base64 *conf_base64);
+int		base64_recoverable_error(t_conf *conf);
+void	print_bits(void *buffer, size_t size);

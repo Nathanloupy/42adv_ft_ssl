@@ -1,5 +1,19 @@
 #include "commons.h"
 
+void	base64_init(t_conf_base64 *conf_base64)
+{
+	conf_base64->input_fd = -1;
+	conf_base64->output_fd = -1;
+}
+
+int	base64_recoverable_error(t_conf *conf)
+{
+	t_conf_base64	*base64 = (t_conf_base64 *)conf;
+
+	(void)base64;
+	return (0);
+}
+
 void	print_bits(void *buffer, size_t size)
 {
 	const char		*COLORS[] = {"\033[0;31m", "\033[0;32m", "\033[0;33m", "\033[0;34m", "\033[0;35m", "\033[0;36m", "\033[0;37m"};
