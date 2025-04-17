@@ -35,7 +35,12 @@ FILES_CIPHER = base64/base64_encode.c \
 				base64/base64_executor.c \
 				base64/base64_parser.c \
 				base64/base64_cleaner.c \
-				base64/base64_utils.c
+				base64/base64_utils.c \
+				des/des_executor.c \
+				des/des_parser.c \
+				des/des_cleaner.c \
+				des/des_utils.c \
+				des/pbkdf2.c
 
 SRCS_MAIN = $(addprefix src/, $(FILES_MAIN))
 
