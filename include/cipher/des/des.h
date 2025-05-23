@@ -54,6 +54,11 @@ typedef struct s_conf_des {
 	char					*iv;
 }	t_conf_des;
 
+typedef struct s_des {
+	u_int64_t main_key;
+	u_int64_t round_keys[16];
+}	t_des;
+
 /* DES - PARSER */
 int		des_parser(int argc, char **argv, t_conf *conf);
 error_t	des_parse_opt(int key, char *arg, struct argp_state *state);
@@ -69,5 +74,5 @@ void	des_init(t_conf_des *conf_des);
 void	des_set_mode(t_conf_des *conf_des, char *command);
 int		des_recoverable_error(t_conf *conf);
 
-/* DES - PBKDF2 */
-char	*pbkdf2(char *P, char *S, size_t c, size_t dkLen);
+/* DES - ALGORITHM */
+void	des_round_key_generation(t_des *des);

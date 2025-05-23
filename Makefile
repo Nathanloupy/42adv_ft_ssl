@@ -1,7 +1,7 @@
 # Makefile for ft_ssl
 
 CC = cc
-CCFLAGS = -Wall -Wextra -Werror
+CCFLAGS = -Wall -Wextra -Werror -lssl -lcrypto
 
 NAME = ft_ssl
 BUILD_DIR = bin
@@ -40,7 +40,7 @@ FILES_CIPHER = base64/base64_encode.c \
 				des/des_parser.c \
 				des/des_cleaner.c \
 				des/des_utils.c \
-				des/pbkdf2.c
+				des/des_key_generation.c
 
 SRCS_MAIN = $(addprefix src/, $(FILES_MAIN))
 
