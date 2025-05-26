@@ -57,6 +57,10 @@ typedef struct s_conf_des {
 typedef struct s_des {
 	u_int64_t main_key;
 	u_int64_t round_keys[16];
+	u_int64_t block;
+	u_int64_t block_permuted;
+	u_int64_t final_round_output;
+	u_int64_t result;
 }	t_des;
 
 /* DES - PARSER */
@@ -75,4 +79,8 @@ void	des_set_mode(t_conf_des *conf_des, char *command);
 int		des_recoverable_error(t_conf *conf);
 
 /* DES - ALGORITHM */
-void	des_round_key_generation(t_des *des);
+void	des_round_keys_generation(t_des *des);
+void	des_reverse_round_keys(t_des *des);
+void	des_initial_permutation(t_des *des);
+void	des_rounds(t_des *des);
+void	des_final_permutation(t_des *des);

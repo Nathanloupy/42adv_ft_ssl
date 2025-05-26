@@ -27,13 +27,13 @@ static const u_int8_t PC2[48] = {
 	46, 42, 50, 36, 29, 32
 };
 
-static u_int32_t rotate_left_28(u_int32_t value, u_int8_t shift)
+static u_int32_t	rotate_left_28(u_int32_t value, u_int8_t shift)
 {
     value &= 0x0fffffff;
     return ((value << shift) | (value >> (28 - shift))) & 0x0fffffff;
 }
 
-void des_round_key_generation(t_des *des)
+void	des_round_keys_generation(t_des *des)
 {
 	u_int32_t c = 0;		// 28 bits
 	u_int32_t d = 0;		// 28 bits
@@ -65,5 +65,17 @@ void des_round_key_generation(t_des *des)
 				right_half |= (1ULL << (23 - j));
 		}
 		des->round_keys[i] = ((u_int64_t)left_half << 24) | right_half;
+	}
+}
+
+void	des_reverse_round_keys(t_des *des)
+{
+	u_int64_t	temp;
+
+	for (size_t i = 0; i < 8; i++)
+	{
+		temp = des->round_keys[i];
+		des->round_keys[i] = des->round_keys[15 - i];
+		des->round_keys[15 - i] = temp;
 	}
 }
