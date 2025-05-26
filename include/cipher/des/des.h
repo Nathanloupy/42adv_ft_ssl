@@ -79,8 +79,10 @@ void	des_set_mode(t_conf_des *conf_des, char *command);
 int		des_recoverable_error(t_conf *conf);
 
 /* DES - ALGORITHM */
-void	des_round_keys_generation(t_des *des);
-void	des_reverse_round_keys(t_des *des);
-void	des_initial_permutation(t_des *des);
-void	des_rounds(t_des *des);
-void	des_final_permutation(t_des *des);
+u_int64_t	des_cipher_block(u_int64_t block, u_int64_t key);
+u_int64_t	des_decipher_block(u_int64_t block, u_int64_t key);
+void		des_round_keys_generation(t_des *des);
+void		des_reverse_round_keys(t_des *des);
+void		des_initial_permutation(t_des *des);
+void		des_rounds(t_des *des);
+void		des_final_permutation(t_des *des);

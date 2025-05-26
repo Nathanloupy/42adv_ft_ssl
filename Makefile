@@ -43,7 +43,9 @@ FILES_CIPHER = base64/base64_encode.c \
 				des/des_key_generation.c \
 				des/des_initial_permutation.c \
 				des/des_rounds.c \
-				des/des_final_permutation.c
+				des/des_final_permutation.c \
+				des/des_cipher_block.c \
+				des/des_decipher_block.c
 
 SRCS_MAIN = $(addprefix src/, $(FILES_MAIN))
 
