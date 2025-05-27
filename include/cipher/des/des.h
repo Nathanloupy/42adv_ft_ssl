@@ -2,6 +2,8 @@
 
 #include "commons.h"
 
+#define DES_BUFFER_SIZE 1024
+
 #define DES_OPTION_HELP 128
 #define DES_OPTION_USAGE 129
 
@@ -53,6 +55,15 @@ typedef struct s_conf_des {
 	char					*passphrase;
 	char					*iv;
 }	t_conf_des;
+
+typedef struct s_exec_des {
+	u_int64_t key;
+	u_int64_t iv;
+	char	*input_buffer;
+	size_t	input_buffer_size;
+	char	*output_buffer;
+	size_t	output_buffer_size;
+}	t_exec_des;
 
 typedef struct s_des {
 	u_int64_t main_key;

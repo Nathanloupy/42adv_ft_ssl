@@ -4,7 +4,7 @@ u_int64_t	des_cipher_block(u_int64_t block, u_int64_t key)
 {
 	t_des	des_data;
 
-	des_data_init(&des_data);
+	memset(&des_data, 0, sizeof(t_des));
 	des_data.block = block;
 	des_data.main_key = key;
 	des_round_keys_generation(&des_data);
