@@ -78,6 +78,22 @@ static const t_handler HANDLERS[] = {
 		.error = des_recoverable_error
 	},
 	{
+		.name = "des-ecb",
+		.type = CIPHER,
+		.parser = des_parser,
+		.executor = des_executor,
+		.cleaner = des_cleaner,
+		.error = des_recoverable_error
+	},
+	{
+		.name = "des-cbc",
+		.type = CIPHER,
+		.parser = des_parser,
+		.executor = des_executor,
+		.cleaner = des_cleaner,
+		.error = des_recoverable_error
+	},
+	{
 		.name = NULL,
 		.type = VOID,
 		.parser = NULL,

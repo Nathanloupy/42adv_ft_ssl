@@ -34,13 +34,54 @@ static int	add_to_input_buffer(char *buffer, size_t size, size_t *input_size, ch
 
 static int	des_execute_cipher(t_exec_des *exec_des)
 {
-	//TODO: execute the cipher depending on the mode
+	size_t			padded_size;
+	u_int64_t		block;
+	u_int64_t		ciphered_block;
+	u_int64_t		prev_ciphertext;
+	char			*padded_input;
+	unsigned char	padding_value;
+
+	padding_value = 8 - (exec_des->input_buffer_size % 8);
+	padded_size = exec_des->input_buffer_size + padding_value;
+	
+	padded_input = calloc(padded_size, sizeof(char));
+	if (!padded_input)
+		return (perror_int());
+	memcpy(padded_input, exec_des->input_buffer, exec_des->input_buffer_size);
+	
+	for (size_t i = exec_des->input_buffer_size; i < padded_size; i++)
+		padded_input[i] = padding_value;
+	
+	exec_des->output_buffer = calloc(padded_size, sizeof(char));
+	if (!exec_des->output_buffer)
+		return (free(padded_input), perror_int());
+	exec_des->output_buffer_size = padded_size;
+	
+	prev_ciphertext = exec_des->iv;
+	for (size_t i = 0; i < padded_size / 8; i++)
+	{
+		block = 0;
+		for (size_t j = 0; j < 8; j++)
+			block |= ((u_int64_t)(unsigned char)padded_input[i * 8 + j]) << (56 - j * 8);
+		
+		if (exec_des->mode == DES_CBC)
+			block ^= prev_ciphertext;
+		
+		ciphered_block = des_cipher_block(block, exec_des->key);
+		
+		for (size_t j = 0; j < 8; j++)
+			exec_des->output_buffer[i * 8 + j] = (ciphered_block >> (56 - j * 8)) & 0xFF;
+		
+		prev_ciphertext = ciphered_block;
+	}
+	free(padded_input);
 	return (0);
 }
 
 static int	des_execute_decipher(t_exec_des *exec_des)
 {
 	//TODO: execute the decipher depending on the mode
+	(void)exec_des;
 	return (0);
 }
 
@@ -53,6 +94,7 @@ int	des_executor(t_conf *conf)
 	ssize_t		bytes_read;
 
 	memset(&exec_des, 0, sizeof(t_exec_des));
+	exec_des.mode = conf_des->mode;
 	if (conf_des->flags & FLAG_DES_KEY)
 	{
 		//TODO: check strings length and composition
@@ -91,7 +133,6 @@ int	des_executor(t_conf *conf)
 		if (close(conf_des->input_fd))
 			return (des_free_exec(&exec_des), perror_int());
 	}
-	else
 	{
 		char	read_buffer[DES_BUFFER_SIZE];
 
@@ -124,9 +165,9 @@ int	des_executor(t_conf *conf)
 			return (des_free_exec(&exec_des), perror_int());
 		exec_des.input_buffer = temp_buffer;
 	}
-	if (conf_des->flags & FLAG_DES_DECRYPT && des_execute_decipher(&exec_des) || des_execute_cipher(&exec_des))
+	if ((conf_des->flags & FLAG_DES_DECRYPT && des_execute_decipher(&exec_des)) || des_execute_cipher(&exec_des))
 		return (des_free_exec(&exec_des), 1);
-	if (conf_des->flags & FLAG_DES_BASE64 && !(conf_des->flags & FLAG_DES_ENCRYPT))
+	if (conf_des->flags & FLAG_DES_BASE64 && !(conf_des->flags & FLAG_DES_DECRYPT))
 	{
 		temp_buffer = base64_encode(exec_des.output_buffer, exec_des.output_buffer_size, &exec_des.output_buffer_size);
 		free(exec_des.output_buffer);
@@ -135,7 +176,25 @@ int	des_executor(t_conf *conf)
 			return (des_free_exec(&exec_des), perror_int());
 		exec_des.output_buffer = temp_buffer;
 	}
-	if (write(STDOUT_FILENO, exec_des.output_buffer, exec_des.output_buffer_size) == -1)
+	if (conf_des->flags & FLAG_DES_BASE64 && !(conf_des->flags & FLAG_DES_DECRYPT))
+	{
+		for (size_t i = 0; i < exec_des.output_buffer_size; i += 64)
+		{
+			if (exec_des.output_buffer_size - i >= 64)
+			{
+				if (write(STDOUT_FILENO, exec_des.output_buffer + i, 64) == -1)
+					return (des_free_exec(&exec_des), perror_int());
+			}
+			else
+			{
+				if (write(STDOUT_FILENO, exec_des.output_buffer + i, exec_des.output_buffer_size - i) == -1)
+					return (des_free_exec(&exec_des), perror_int());
+			}
+			if (write(STDOUT_FILENO, "\n", 1) == -1)
+					return (des_free_exec(&exec_des), perror_int());
+		}
+	}
+	else if (write(STDOUT_FILENO, exec_des.output_buffer, exec_des.output_buffer_size) == -1)
 		return (des_free_exec(&exec_des), perror_int());
 	des_free_exec(&exec_des);
 	return (0);

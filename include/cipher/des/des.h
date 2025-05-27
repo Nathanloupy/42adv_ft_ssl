@@ -57,12 +57,13 @@ typedef struct s_conf_des {
 }	t_conf_des;
 
 typedef struct s_exec_des {
-	u_int64_t key;
-	u_int64_t iv;
-	char	*input_buffer;
-	size_t	input_buffer_size;
-	char	*output_buffer;
-	size_t	output_buffer_size;
+	enum e_des_cipher_mode	mode;
+	u_int64_t				key;
+	u_int64_t				iv;
+	char					*input_buffer;
+	size_t					input_buffer_size;
+	char					*output_buffer;
+	size_t					output_buffer_size;
 }	t_exec_des;
 
 typedef struct s_des {
