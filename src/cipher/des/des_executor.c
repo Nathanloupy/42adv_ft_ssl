@@ -32,7 +32,18 @@ static int	add_to_input_buffer(char *buffer, size_t size, size_t *input_size, ch
 	return (0);
 }
 
-//TODO: check all returns for missing frees/closes/etc
+static int	des_execute_cipher(t_exec_des *exec_des)
+{
+	//TODO: execute the cipher depending on the mode
+	return (0);
+}
+
+static int	des_execute_decipher(t_exec_des *exec_des)
+{
+	//TODO: execute the decipher depending on the mode
+	return (0);
+}
+
 int	des_executor(t_conf *conf)
 {
 	t_conf_des	*conf_des = (t_conf_des *)conf;
@@ -68,6 +79,8 @@ int	des_executor(t_conf *conf)
 		strncpy(temp_str, conf_des->iv, 16);
 		exec_des.iv = strtoull(temp_str, NULL, 16);
 	}
+	exec_des.key = 0x6162636465666768;
+	exec_des.iv = 0x3031323334353637;
 	if (conf_des->flags & FLAG_DES_INPUT_FILE)
 	{
 		conf_des->input_fd = open(conf_des->input_file, O_RDONLY);
@@ -80,15 +93,15 @@ int	des_executor(t_conf *conf)
 	}
 	else
 	{
-		char	buffer[DES_BUFFER_SIZE];
+		char	read_buffer[DES_BUFFER_SIZE];
 
-		while ((bytes_read = read(STDIN_FILENO, buffer, DES_BUFFER_SIZE)) > 0)
+		while ((bytes_read = read(STDIN_FILENO, read_buffer, DES_BUFFER_SIZE)) > 0)
 		{
-			if (add_to_input_buffer(buffer, bytes_read, &exec_des.input_buffer_size, &exec_des.input_buffer))
+			if (add_to_input_buffer(read_buffer, bytes_read, &exec_des.input_buffer_size, &exec_des.input_buffer))
 				return (des_free_exec(&exec_des), perror_int());
 		}
 		if (bytes_read == -1)
-			return (perror_int());
+			return (des_free_exec(&exec_des), perror_int());
 	}
 	if (conf_des->flags & FLAG_DES_OUTPUT_FILE)
 	{
@@ -111,10 +124,9 @@ int	des_executor(t_conf *conf)
 			return (des_free_exec(&exec_des), perror_int());
 		exec_des.input_buffer = temp_buffer;
 	}
-	//!
-	//TODO: execute the cipher/decipher depending on the mode
-	//!
-	if (conf_des->flags & FLAG_DES_BASE64 && conf_des->flags & FLAG_DES_ENCRYPT)
+	if (conf_des->flags & FLAG_DES_DECRYPT && des_execute_decipher(&exec_des) || des_execute_cipher(&exec_des))
+		return (des_free_exec(&exec_des), 1);
+	if (conf_des->flags & FLAG_DES_BASE64 && !(conf_des->flags & FLAG_DES_ENCRYPT))
 	{
 		temp_buffer = base64_encode(exec_des.output_buffer, exec_des.output_buffer_size, &exec_des.output_buffer_size);
 		free(exec_des.output_buffer);
