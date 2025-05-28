@@ -80,8 +80,57 @@ static int	des_execute_cipher(t_exec_des *exec_des)
 
 static int	des_execute_decipher(t_exec_des *exec_des)
 {
-	//TODO: execute the decipher depending on the mode
-	(void)exec_des;
+	size_t			input_size;
+	u_int64_t		block;
+	u_int64_t		deciphered_block;
+	u_int64_t		prev_ciphertext;
+	u_int64_t		current_ciphertext;
+	unsigned char	padding_value;
+	size_t			actual_size;
+
+	input_size = exec_des->input_buffer_size;
+	
+	if (input_size % 8 != 0)
+		return (fprintf(stderr, "%s: invalid input\n", FT_SSL_NAME), 1);
+	
+	exec_des->output_buffer = calloc(input_size, sizeof(char));
+	if (!exec_des->output_buffer)
+		return (perror_int());
+	exec_des->output_buffer_size = input_size;
+	
+	prev_ciphertext = exec_des->iv;
+	for (size_t i = 0; i < input_size / 8; i++)
+	{
+		block = 0;
+		for (size_t j = 0; j < 8; j++)
+			block |= ((u_int64_t)(unsigned char)exec_des->input_buffer[i * 8 + j]) << (56 - j * 8);
+		
+		current_ciphertext = block;
+		deciphered_block = des_decipher_block(block, exec_des->key);
+		
+		if (exec_des->mode == DES_CBC)
+			deciphered_block ^= prev_ciphertext;
+		
+		for (size_t j = 0; j < 8; j++)
+			exec_des->output_buffer[i * 8 + j] = (deciphered_block >> (56 - j * 8)) & 0xFF;
+
+		prev_ciphertext = current_ciphertext;
+	}
+	
+	if (input_size > 0)
+	{
+		padding_value = (unsigned char)exec_des->output_buffer[input_size - 1];
+		if (padding_value == 0 || padding_value > 8)
+			return (fprintf(stderr, "%s: invalid input\n", FT_SSL_NAME), 1);
+		for (size_t i = input_size - padding_value; i < input_size; i++)
+		{
+			if ((unsigned char)exec_des->output_buffer[i] != padding_value)
+				return (fprintf(stderr, "%s: invalid input\n", FT_SSL_NAME), 1);
+		}
+		actual_size = input_size - padding_value;
+		exec_des->output_buffer_size = actual_size;
+	}
+	
 	return (0);
 }
 
@@ -165,7 +214,7 @@ int	des_executor(t_conf *conf)
 			return (des_free_exec(&exec_des), perror_int());
 		exec_des.input_buffer = temp_buffer;
 	}
-	if ((conf_des->flags & FLAG_DES_DECRYPT && des_execute_decipher(&exec_des)) || des_execute_cipher(&exec_des))
+	if ((conf_des->flags & FLAG_DES_DECRYPT) ? des_execute_decipher(&exec_des) : des_execute_cipher(&exec_des))
 		return (des_free_exec(&exec_des), 1);
 	if (conf_des->flags & FLAG_DES_BASE64 && !(conf_des->flags & FLAG_DES_DECRYPT))
 	{
