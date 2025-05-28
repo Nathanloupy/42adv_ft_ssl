@@ -1,13 +1,5 @@
 #include "commons.h"
 
-void	des_string_length_error(size_t size)
-{
-	if (size < 16)
-		fprintf(stderr, "%s: hex string is too short, padding with zero bytes to length 16\n", FT_SSL_NAME);
-	else if (size > 16)
-		fprintf(stderr, "%s: hex string is too long, ignoring excess\n", FT_SSL_NAME);
-}
-
 static void	des_free_exec(t_exec_des *exec_des)
 {
 	if (exec_des->input_buffer)
@@ -146,32 +138,57 @@ int	des_executor(t_conf *conf)
 	exec_des.mode = conf_des->mode;
 	if (conf_des->flags & FLAG_DES_KEY)
 	{
-		//TODO: check strings length and composition
+		if (des_check_hex(conf_des->key))
+			return (fprintf(stderr, "%s: invalid hex format\n", FT_SSL_NAME), des_free_exec(&exec_des), 1);
+		des_string_length_error(strlen(conf_des->key));
 		memset(temp_str, 0, sizeof(temp_str));
 		strncpy(temp_str, conf_des->key, 16);
 		exec_des.key = strtoull(temp_str, NULL, 16);
 	}
 	else
 	{
+		char		*passphrase;
+		char		*salt;
+
 		if (conf_des->flags & FLAG_DES_PASSPHRASE)
 		{
-			//TODO: generate key from passphrase and salt (truncate to 8 bytes)
+			passphrase = strdup(conf_des->passphrase);
+			if (!passphrase)
+				return (des_free_exec(&exec_des), perror_int());
 		}
 		else
 		{
-			//TODO: get the passphrase from stdin (truncate to 8 bytes)
+			passphrase = des_read_passphrase_from_stdin();
+			if (!passphrase)
+				return (fprintf(stderr, "%s: invalid input\n", FT_SSL_NAME), des_free_exec(&exec_des), 1); //TODO: check for error message
 		}
-		//TODO: generate key from passphrase
+		if (conf_des->flags & FLAG_DES_SALT)
+		{
+			salt = strdup(conf_des->salt);
+			if (!salt)
+				return (free(passphrase), des_free_exec(&exec_des), perror_int());
+		}
+		else
+		{
+			salt = des_generate_random_salt(); //TODO
+			if (!salt)
+				return (free(passphrase), des_free_exec(&exec_des), perror_int()); //TODO: check for error message
+		}
+		exec_des.key = des_derive_key_from_passphrase(passphrase, salt); //TODO
+		free(passphrase);
+		free(salt);
 	}
 	if (conf_des->flags & FLAG_DES_IV)
 	{
-		//TODO: check strings length and composition
+		if (des_check_hex(conf_des->iv))
+			return (fprintf(stderr, "%s: invalid hex format\n", FT_SSL_NAME), des_free_exec(&exec_des), 1);
+		des_string_length_error(strlen(conf_des->iv));
 		memset(temp_str, 0, sizeof(temp_str));
 		strncpy(temp_str, conf_des->iv, 16);
 		exec_des.iv = strtoull(temp_str, NULL, 16);
 	}
-	exec_des.key = 0x6162636465666768;
-	exec_des.iv = 0x3031323334353637;
+	else
+		exec_des.iv = 0x0000000000000000;
 	if (conf_des->flags & FLAG_DES_INPUT_FILE)
 	{
 		conf_des->input_fd = open(conf_des->input_file, O_RDONLY);

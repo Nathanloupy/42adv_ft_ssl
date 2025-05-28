@@ -20,10 +20,14 @@ error_t	des_parse_opt(int key, char *arg, struct argp_state *state)
 			conf_des->flags |= FLAG_DES_ENCRYPT;
 			break;
 		case 'i':
+			if (conf_des->flags & FLAG_DES_INPUT_FILE)
+				return (ARGP_ERR_UNKNOWN);
 			conf_des->flags |= FLAG_DES_INPUT_FILE;
 			conf_des->input_file = arg;
 			break;
 		case 'o':
+			if (conf_des->flags & FLAG_DES_OUTPUT_FILE)
+				return (ARGP_ERR_UNKNOWN);
 			conf_des->flags |= FLAG_DES_OUTPUT_FILE;
 			conf_des->output_file = arg;
 			break;
