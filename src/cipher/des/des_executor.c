@@ -28,10 +28,6 @@ static int	add_to_input_buffer(char *buffer, size_t size, size_t *input_size, ch
 	return (0);
 }
 
-
-//TODO: check
-//echo "what kind of lock takes no key?" | openssl des-cbc -K "00000000" -iv 1234 | ./bin/ft_ssl des-cbc -d -k "00000000" -v 1234
-
 int	des_executor(t_conf *conf)
 {
 	t_conf_des	*conf_des = (t_conf_des *)conf;
@@ -150,7 +146,7 @@ int	des_executor(t_conf *conf)
 			if (!salt)
 				return (des_free_exec(&exec_des), perror_int());
 		}
-		//TODO: derive key from passphrase and salt
+		exec_des.key = des_derive_key(exec_des.passphrase, salt);
 		if (!(conf_des->flags & FLAG_DES_DECRYPT))
 		{
 			exec_des.salt_buffer = calloc(17, sizeof(char));

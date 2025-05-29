@@ -42,7 +42,8 @@ FILES_CIPHER = base64/base64_encode.c \
 				des/des_cleaner.c \
 				des/des_utils.c \
 				des/des_strings_utils.c \
-				des/des_key_generation.c \
+				des/des_derive_key.c \
+				des/des_round_keys_generation.c \
 				des/des_permutations.c \
 				des/des_rounds.c \
 				des/des_cipher_block.c \
