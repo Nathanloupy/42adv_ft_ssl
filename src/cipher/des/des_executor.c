@@ -28,6 +28,10 @@ static int	add_to_input_buffer(char *buffer, size_t size, size_t *input_size, ch
 	return (0);
 }
 
+
+//TODO: check
+//echo "what kind of lock takes no key?" | openssl des-cbc -K "00000000" -iv 1234 | ./bin/ft_ssl des-cbc -d -k "00000000" -v 1234
+
 int	des_executor(t_conf *conf)
 {
 	t_conf_des	*conf_des = (t_conf_des *)conf;
@@ -35,6 +39,8 @@ int	des_executor(t_conf *conf)
 	char		*temp_buffer;
 	ssize_t		bytes_read;
 
+	if (conf_des->flags & FLAG_DES_HELP || conf_des->flags & FLAG_DES_USAGE)
+		return (0);
 	memset(&exec_des, 0, sizeof(t_exec_des));
 	exec_des.mode = conf_des->mode;
 	if (conf_des->flags & FLAG_DES_KEY)

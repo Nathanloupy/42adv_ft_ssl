@@ -3,7 +3,7 @@
 void	des_string_length_error(size_t size)
 {
 	if (size < 16)
-		fprintf(stderr, "%s: hex string is too short, padding with zero bytes\n", FT_SSL_NAME);
+		fprintf(stderr, "%s: hex string is too short, padding with zero bytes to length\n", FT_SSL_NAME);
 	else if (size > 16)
 		fprintf(stderr, "%s: hex string is too long, ignoring excess\n", FT_SSL_NAME);
 }
@@ -70,9 +70,9 @@ u_int64_t	des_hex_to_ull(const char *str)
 	size = strlen(str);
 	if (size > 16)
 		size = 16;
-	memset(temp_fixed_str, '0', sizeof(temp_fixed_str));
+	memset(temp_fixed_str, '0', 16);
 	memcpy(temp_fixed_str, str, size);
-	temp_fixed_str[size] = '\0';
+	temp_fixed_str[16] = '\0';
 	ull = strtoull(temp_fixed_str, NULL, 16);
 	return (ull);
 }
