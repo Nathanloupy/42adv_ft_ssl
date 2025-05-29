@@ -24,21 +24,18 @@ int	des_check_hex(const char *str)
 
 char	*des_read_passphrase_from_stdin(void)
 {
-	char	*passphrase;
 	char	*input;
-	size_t	len;
+	char	*verify_input;
 
 	input = getpass("Enter DES passphrase: ");
 	if (!input)
-		return (NULL); //TODO: check for all possible errors
-	//TODO: verify password entry
-	len = strlen(input);
-	passphrase = calloc(len + 1, sizeof(char));
-	if (!passphrase)
-		return (free(input), NULL);
-	strncpy(passphrase, input, len);
-	free(input);
-	return (passphrase);
+		return (NULL);
+	verify_input = getpass("Verify DES passphrase: ");
+	if (!verify_input)
+		return (NULL);
+	if (strcmp(input, verify_input) != 0)
+		return (fprintf(stderr, "%s: verify failure\n", FT_SSL_NAME), free(input), free(verify_input), NULL);
+	return (input);
 }
 
 char	*des_generate_random_salt(void)

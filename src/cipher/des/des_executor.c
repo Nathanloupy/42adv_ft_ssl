@@ -6,6 +6,8 @@ static void	des_free_exec(t_exec_des *exec_des)
 		free(exec_des->input_buffer);
 	if (exec_des->output_buffer)
 		free(exec_des->output_buffer);
+	if (exec_des->salt_buffer)
+		free(exec_des->salt_buffer);
 	memset(exec_des, 0, sizeof(t_exec_des));
 }
 
@@ -24,6 +26,10 @@ static int	add_to_input_buffer(char *buffer, size_t size, size_t *input_size, ch
 	return (0);
 }
 
+/*
+- Salt storage and recovery
+- PBKDF2
+*/
 int	des_executor(t_conf *conf)
 {
 	t_conf_des	*conf_des = (t_conf_des *)conf;
@@ -41,37 +47,13 @@ int	des_executor(t_conf *conf)
 		des_string_length_error(strlen(conf_des->key));
 		memset(temp_str, 0, sizeof(temp_str));
 		strncpy(temp_str, conf_des->key, 16);
-		exec_des.key = strtoull(temp_str, NULL, 16);
+		exec_des.key = strtoull(temp_str, NULL, 16); //TODO: check if the proper conversion is made
 	}
-	else
+	else if (!(conf_des->flags & FLAG_DES_PASSPHRASE))
 	{
-		char		*passphrase;
-		char		*salt;
-
-		if (conf_des->flags & FLAG_DES_PASSPHRASE)
-			passphrase = conf_des->passphrase;
-		else
-			passphrase = des_read_passphrase_from_stdin(); //TODO: check for error message
-		if (conf_des->flags & FLAG_DES_SALT)
-		{
-			if (des_check_hex(conf_des->salt))
-				return (fprintf(stderr, "%s: invalid hex format\n", FT_SSL_NAME), des_free_exec(&exec_des), 1);
-			des_string_length_error(strlen(conf_des->salt));
-			salt = calloc(9, sizeof(char));
-			if (!salt)
-				return (des_free_exec(&exec_des), perror_int());
-			strncpy(salt, conf_des->salt, 8);
-		}
-		else
-		{
-			salt = des_generate_random_salt();
-			if (!salt)
-				return (des_free_exec(&exec_des), perror_int());
-		}
-		(void)passphrase; //TODO: remove
-		exec_des.key = 0x0123456789ABCDEF; //des_derive_key_from_passphrase(passphrase, salt); //TODO
-		free(salt);
-		//TODO: recover salt from encrypted file / write salt to encrypted file ?
+		conf_des->passphrase = des_read_passphrase_from_stdin(); //TODO: check for error message
+		if (!conf_des->passphrase)
+			return (des_free_exec(&exec_des), perror_int());
 	}
 	if (conf_des->flags & FLAG_DES_IV)
 	{
@@ -80,7 +62,7 @@ int	des_executor(t_conf *conf)
 		des_string_length_error(strlen(conf_des->iv));
 		memset(temp_str, 0, sizeof(temp_str));
 		strncpy(temp_str, conf_des->iv, 16);
-		exec_des.iv = strtoull(temp_str, NULL, 16);
+		exec_des.iv = strtoull(temp_str, NULL, 16); //TODO: check if the proper conversion is made
 	}
 	else
 		exec_des.iv = 0x0000000000000000;
@@ -126,8 +108,62 @@ int	des_executor(t_conf *conf)
 			return (des_free_exec(&exec_des), perror_int());
 		exec_des.input_buffer = temp_buffer;
 	}
+	if (!(conf_des->flags & FLAG_DES_KEY))
+	{
+		char	*salt;
+		if (conf_des->flags & FLAG_DES_DECRYPT)
+		{
+			if (exec_des.input_buffer_size < 16 || memcmp(exec_des.input_buffer, "Salted__", 8) != 0)
+				return (fprintf(stderr, "%s: error reading input file\n", FT_SSL_NAME), des_free_exec(&exec_des), 1);
+			salt = calloc(9, sizeof(char));
+			if (!salt)
+				return (des_free_exec(&exec_des), perror_int());
+			memcpy(salt, exec_des.input_buffer + 8, 8);
+			temp_buffer = calloc(exec_des.input_buffer_size - 16, sizeof(char));
+			if (!temp_buffer)
+				return (free(salt), des_free_exec(&exec_des), perror_int());
+			memcpy(temp_buffer, exec_des.input_buffer + 16, exec_des.input_buffer_size - 16);
+			free(exec_des.input_buffer);
+			exec_des.input_buffer = temp_buffer;
+			exec_des.input_buffer_size -= 16;
+		}
+		else if (conf_des->flags & FLAG_DES_SALT)
+		{
+			
+		}
+		else
+		{
+			salt = des_generate_random_salt();
+			if (!salt)
+				return (des_free_exec(&exec_des), perror_int());
+		}
+		//TODO: derive key from passphrase and salt
+		if (!(conf_des->flags & FLAG_DES_DECRYPT))
+		{
+			exec_des.salt_buffer = calloc(17, sizeof(char));
+			if (!exec_des.salt_buffer)
+				return (free(salt), des_free_exec(&exec_des), perror_int());
+			memcpy(exec_des.salt_buffer, "Salted__", 8);
+			memcpy(exec_des.salt_buffer + 8, salt, 8);
+			exec_des.salt_buffer_size = 16;
+		}
+		free(salt);
+	}
 	if ((conf_des->flags & FLAG_DES_DECRYPT) ? des_execute_decipher(&exec_des) : des_execute_cipher(&exec_des))
 		return (des_free_exec(&exec_des), 1);
+	if (exec_des.salt_buffer)
+	{
+		temp_buffer = calloc(exec_des.salt_buffer_size + exec_des.output_buffer_size, sizeof(char));
+		if (!temp_buffer)
+			return (des_free_exec(&exec_des), perror_int());
+		memcpy(temp_buffer, exec_des.salt_buffer, exec_des.salt_buffer_size);
+		memcpy(temp_buffer + exec_des.salt_buffer_size, exec_des.output_buffer, exec_des.output_buffer_size);
+		free(exec_des.output_buffer);
+		exec_des.output_buffer = temp_buffer;
+		exec_des.output_buffer_size += exec_des.salt_buffer_size;
+		free(exec_des.salt_buffer);
+		exec_des.salt_buffer = NULL;
+	}
 	if (conf_des->flags & FLAG_DES_BASE64 && !(conf_des->flags & FLAG_DES_DECRYPT))
 	{
 		temp_buffer = base64_encode(exec_des.output_buffer, exec_des.output_buffer_size, &exec_des.output_buffer_size);

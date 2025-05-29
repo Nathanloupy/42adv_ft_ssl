@@ -58,12 +58,15 @@ typedef struct s_conf_des {
 
 typedef struct s_exec_des {
 	enum e_des_cipher_mode	mode;
+	u_int64_t				salt;
 	u_int64_t				key;
 	u_int64_t				iv;
 	char					*input_buffer;
 	size_t					input_buffer_size;
 	char					*output_buffer;
 	size_t					output_buffer_size;
+	char					*salt_buffer;
+	size_t					salt_buffer_size;
 }	t_exec_des;
 
 typedef struct s_des {
@@ -98,6 +101,7 @@ int			des_recoverable_error(t_conf *conf);
 void		des_string_length_error(size_t size);
 int			des_check_hex(const char *str);
 char		*des_read_passphrase_from_stdin(void);
+char		*des_generate_random_salt(void);
 
 /* DES - ALGORITHM */
 u_int64_t	des_cipher_block(u_int64_t block, u_int64_t key);
