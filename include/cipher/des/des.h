@@ -58,6 +58,7 @@ typedef struct s_conf_des {
 
 typedef struct s_exec_des {
 	enum e_des_cipher_mode	mode;
+	char					*passphrase;
 	u_int64_t				salt;
 	u_int64_t				key;
 	u_int64_t				iv;

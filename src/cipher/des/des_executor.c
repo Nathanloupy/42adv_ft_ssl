@@ -2,12 +2,14 @@
 
 static void	des_free_exec(t_exec_des *exec_des)
 {
+	if (exec_des->passphrase)
+		free(exec_des->passphrase);
+	if (exec_des->salt_buffer)
+		free(exec_des->salt_buffer);
 	if (exec_des->input_buffer)
 		free(exec_des->input_buffer);
 	if (exec_des->output_buffer)
 		free(exec_des->output_buffer);
-	if (exec_des->salt_buffer)
-		free(exec_des->salt_buffer);
 	memset(exec_des, 0, sizeof(t_exec_des));
 }
 
@@ -42,11 +44,17 @@ int	des_executor(t_conf *conf)
 		des_string_length_error(strlen(conf_des->key));
 		exec_des.key = des_hex_to_ull(conf_des->key);
 	}
-	else if (!(conf_des->flags & FLAG_DES_PASSPHRASE))
+	else if (conf_des->flags & FLAG_DES_PASSPHRASE)
 	{
-		conf_des->passphrase = des_read_passphrase_from_stdin();
-		if (!conf_des->passphrase)
+		exec_des.passphrase = strdup(conf_des->passphrase);
+		if (!exec_des.passphrase)
 			return (des_free_exec(&exec_des), perror_int());
+	}
+	else
+	{
+		exec_des.passphrase = des_read_passphrase_from_stdin();
+		if (!exec_des.passphrase)
+			return (des_free_exec(&exec_des), 1);
 	}
 	if (conf_des->flags & FLAG_DES_IV)
 	{
