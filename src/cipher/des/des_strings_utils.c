@@ -31,7 +31,7 @@ char	*des_read_passphrase_from_stdin(void)
 	input = getpass("Enter DES passphrase: ");
 	if (!input)
 		return (NULL); //TODO: check for all possible errors
-	
+	//TODO: verify password entry
 	len = strlen(input);
 	passphrase = calloc(len + 1, sizeof(char));
 	if (!passphrase)
@@ -39,4 +39,21 @@ char	*des_read_passphrase_from_stdin(void)
 	strncpy(passphrase, input, len);
 	free(input);
 	return (passphrase);
+}
+
+char	*des_generate_random_salt(void)
+{
+	char	*salt;
+	int		fd;
+
+	salt = calloc(9, sizeof(char));
+	if (!salt)
+		return (NULL);
+	fd = open("/dev/urandom", O_RDONLY);
+	if (fd == -1)
+		return (free(salt), NULL);
+	if (read(fd, salt, 8) != 8)
+		return (close(fd), free(salt), NULL);
+	close(fd);
+	return (salt);
 }

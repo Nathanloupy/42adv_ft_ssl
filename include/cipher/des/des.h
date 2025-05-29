@@ -85,6 +85,10 @@ void	des_cleaner(t_conf *conf);
 /* DES - EXECUTOR */
 int		des_executor(t_conf *conf);
 
+/* DES - EXECUTION */
+int		des_execute_cipher(t_exec_des *exec_des);
+int		des_execute_decipher(t_exec_des *exec_des);
+
 /* DES - UTILS */
 void		des_init(t_conf_des *conf_des);
 void		des_set_mode(t_conf_des *conf_des, char *command);
@@ -92,7 +96,7 @@ int			des_recoverable_error(t_conf *conf);
 
 /* DES - UTILS - STRINGS */
 void		des_string_length_error(size_t size);
-int			des_is_valid_hex_string(const char *str, size_t expected_length);
+int			des_check_hex(const char *str);
 char		*des_read_passphrase_from_stdin(void);
 
 /* DES - ALGORITHM */

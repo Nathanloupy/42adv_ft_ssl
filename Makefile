@@ -37,13 +37,14 @@ FILES_CIPHER = base64/base64_encode.c \
 				base64/base64_cleaner.c \
 				base64/base64_utils.c \
 				des/des_executor.c \
+				des/des_execution.c \
 				des/des_parser.c \
 				des/des_cleaner.c \
 				des/des_utils.c \
+				des/des_strings_utils.c \
 				des/des_key_generation.c \
-				des/des_initial_permutation.c \
+				des/des_permutations.c \
 				des/des_rounds.c \
-				des/des_final_permutation.c \
 				des/des_cipher_block.c \
 				des/des_decipher_block.c
 

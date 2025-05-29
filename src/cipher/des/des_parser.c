@@ -2,8 +2,6 @@
 
 static struct argp des_argp = {des_options, des_parse_opt, "", "DES encrypt or decrypt FILE, or standard input, to standard output.", NULL, NULL, NULL};
 
-//TODO: check for support or not of multiple input/output files
-
 error_t	des_parse_opt(int key, char *arg, struct argp_state *state)
 {
 	t_conf_des	*conf_des = state->input;
