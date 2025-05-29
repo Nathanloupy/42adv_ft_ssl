@@ -26,15 +26,10 @@ static int	add_to_input_buffer(char *buffer, size_t size, size_t *input_size, ch
 	return (0);
 }
 
-/*
-- Salt storage and recovery
-- PBKDF2
-*/
 int	des_executor(t_conf *conf)
 {
 	t_conf_des	*conf_des = (t_conf_des *)conf;
 	t_exec_des	exec_des;
-	char		temp_str[17];
 	char		*temp_buffer;
 	ssize_t		bytes_read;
 
@@ -45,13 +40,11 @@ int	des_executor(t_conf *conf)
 		if (des_check_hex(conf_des->key))
 			return (fprintf(stderr, "%s: invalid hex format\n", FT_SSL_NAME), des_free_exec(&exec_des), 1);
 		des_string_length_error(strlen(conf_des->key));
-		memset(temp_str, 0, sizeof(temp_str));
-		strncpy(temp_str, conf_des->key, 16);
-		exec_des.key = strtoull(temp_str, NULL, 16); //TODO: check if the proper conversion is made
+		exec_des.key = des_hex_to_ull(conf_des->key);
 	}
 	else if (!(conf_des->flags & FLAG_DES_PASSPHRASE))
 	{
-		conf_des->passphrase = des_read_passphrase_from_stdin(); //TODO: check for error message
+		conf_des->passphrase = des_read_passphrase_from_stdin();
 		if (!conf_des->passphrase)
 			return (des_free_exec(&exec_des), perror_int());
 	}
@@ -60,9 +53,7 @@ int	des_executor(t_conf *conf)
 		if (des_check_hex(conf_des->iv))
 			return (fprintf(stderr, "%s: invalid hex format\n", FT_SSL_NAME), des_free_exec(&exec_des), 1);
 		des_string_length_error(strlen(conf_des->iv));
-		memset(temp_str, 0, sizeof(temp_str));
-		strncpy(temp_str, conf_des->iv, 16);
-		exec_des.iv = strtoull(temp_str, NULL, 16); //TODO: check if the proper conversion is made
+		exec_des.iv = des_hex_to_ull(conf_des->iv);
 	}
 	else
 		exec_des.iv = 0x0000000000000000;
@@ -129,7 +120,15 @@ int	des_executor(t_conf *conf)
 		}
 		else if (conf_des->flags & FLAG_DES_SALT)
 		{
-			
+			if (des_check_hex(conf_des->salt))
+				return (fprintf(stderr, "%s: invalid hex format\n", FT_SSL_NAME), des_free_exec(&exec_des), 1);
+			des_string_length_error(strlen(conf_des->salt));
+			exec_des.salt = des_hex_to_ull(conf_des->salt);
+			salt = calloc(9, sizeof(char));
+			if (!salt)
+				return (des_free_exec(&exec_des), perror_int());
+			for (size_t i = 0; i < 8; i++)
+				salt[i] = (exec_des.salt >> (56 - i * 8)) & 0xFF;
 		}
 		else
 		{

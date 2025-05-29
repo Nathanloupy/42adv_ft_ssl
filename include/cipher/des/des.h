@@ -102,6 +102,7 @@ void		des_string_length_error(size_t size);
 int			des_check_hex(const char *str);
 char		*des_read_passphrase_from_stdin(void);
 char		*des_generate_random_salt(void);
+u_int64_t	des_hex_to_ull(const char *str);
 
 /* DES - ALGORITHM */
 u_int64_t	des_cipher_block(u_int64_t block, u_int64_t key);
