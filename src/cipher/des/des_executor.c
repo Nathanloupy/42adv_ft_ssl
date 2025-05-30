@@ -43,8 +43,8 @@ int	des_executor(t_conf *conf)
 	{
 		if (des_check_hex(conf_des->key))
 			return (fprintf(stderr, "%s: invalid hex format\n", FT_SSL_NAME), des_free_exec(&exec_des), 1);
-		des_string_length_error(strlen(conf_des->key));
-		exec_des.key = des_hex_to_ull(conf_des->key);
+		des_string_length_error(strlen(conf_des->key), 1);
+		des_parse_keys(&exec_des.keys, conf_des->key, 1);
 	}
 	else if (conf_des->flags & FLAG_DES_PASSPHRASE)
 	{
@@ -62,7 +62,7 @@ int	des_executor(t_conf *conf)
 	{
 		if (des_check_hex(conf_des->iv))
 			return (fprintf(stderr, "%s: invalid hex format\n", FT_SSL_NAME), des_free_exec(&exec_des), 1);
-		des_string_length_error(strlen(conf_des->iv));
+		des_string_length_error(strlen(conf_des->iv), 1);
 		exec_des.iv = des_hex_to_ull(conf_des->iv);
 	}
 	else
@@ -132,7 +132,7 @@ int	des_executor(t_conf *conf)
 		{
 			if (des_check_hex(conf_des->salt))
 				return (fprintf(stderr, "%s: invalid hex format\n", FT_SSL_NAME), des_free_exec(&exec_des), 1);
-			des_string_length_error(strlen(conf_des->salt));
+			des_string_length_error(strlen(conf_des->salt), 1);
 			exec_des.salt = des_hex_to_ull(conf_des->salt);
 			salt = calloc(9, sizeof(char));
 			if (!salt)
@@ -146,7 +146,9 @@ int	des_executor(t_conf *conf)
 			if (!salt)
 				return (des_free_exec(&exec_des), perror_int());
 		}
-		exec_des.key = des_derive_key(exec_des.passphrase, salt);
+		int res = des_derive_key(&exec_des.keys, exec_des.passphrase, salt, 1);
+		if (res)
+			return (fprintf(stderr, "%s: error deriving key\n", FT_SSL_NAME), des_free_exec(&exec_des), 1);
 		if (!(conf_des->flags & FLAG_DES_DECRYPT))
 		{
 			exec_des.salt_buffer = calloc(17, sizeof(char));

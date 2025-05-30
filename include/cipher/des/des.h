@@ -60,7 +60,7 @@ typedef struct s_exec_des {
 	enum e_des_cipher_mode	mode;
 	char					*passphrase;
 	u_int64_t				salt;
-	u_int64_t				key;
+	u_int64_t				keys[3];
 	u_int64_t				iv;
 	char					*input_buffer;
 	size_t					input_buffer_size;
@@ -99,11 +99,15 @@ void		des_set_mode(t_conf_des *conf_des, char *command);
 int			des_recoverable_error(t_conf *conf);
 
 /* DES - UTILS - STRINGS */
-void		des_string_length_error(size_t size);
+void		des_string_length_error(size_t size, size_t number_of_concatenations);
 int			des_check_hex(const char *str);
 char		*des_read_passphrase_from_stdin(void);
 char		*des_generate_random_salt(void);
 u_int64_t	des_hex_to_ull(const char *str);
+void		des_parse_keys(u_int64_t (*keys)[3], char *str, size_t number_of_keys);
+
+/* DES - UTILS - KEY */
+int			des_derive_key(u_int64_t (*keys)[3], char *passphrase, char *salt, size_t number_of_keys);
 
 /* DES - ALGORITHM */
 u_int64_t	des_cipher_block(u_int64_t block, u_int64_t key);

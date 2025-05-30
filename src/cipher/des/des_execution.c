@@ -35,7 +35,7 @@ int	des_execute_cipher(t_exec_des *exec_des)
 		if (exec_des->mode == DES_CBC)
 			block ^= prev_ciphertext;
 		
-		ciphered_block = des_cipher_block(block, exec_des->key);
+		ciphered_block = des_cipher_block(block, exec_des->keys[0]);
 		
 		for (size_t j = 0; j < 8; j++)
 			exec_des->output_buffer[i * 8 + j] = (ciphered_block >> (56 - j * 8)) & 0xFF;
@@ -74,7 +74,7 @@ int	des_execute_decipher(t_exec_des *exec_des)
 			block |= ((u_int64_t)(unsigned char)exec_des->input_buffer[i * 8 + j]) << (56 - j * 8);
 		
 		current_ciphertext = block;
-		deciphered_block = des_decipher_block(block, exec_des->key);
+		deciphered_block = des_decipher_block(block, exec_des->keys[0]);
 		
 		if (exec_des->mode == DES_CBC)
 			deciphered_block ^= prev_ciphertext;

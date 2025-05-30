@@ -1,10 +1,10 @@
 #include "commons.h"
 
-void	des_string_length_error(size_t size)
+void	des_string_length_error(size_t size, size_t number_of_concatenations)
 {
-	if (size < 16)
+	if (size < 16 * number_of_concatenations)
 		fprintf(stderr, "%s: hex string is too short, padding with zero bytes to length\n", FT_SSL_NAME);
-	else if (size > 16)
+	else if (size > 16 * number_of_concatenations)
 		fprintf(stderr, "%s: hex string is too long, ignoring excess\n", FT_SSL_NAME);
 }
 
@@ -75,4 +75,17 @@ u_int64_t	des_hex_to_ull(const char *str)
 	temp_fixed_str[16] = '\0';
 	ull = strtoull(temp_fixed_str, NULL, 16);
 	return (ull);
+}
+
+void	des_parse_keys(u_int64_t (*keys)[3], char *str, size_t number_of_keys)
+{
+	if (!str || !keys)
+		return ;
+	for (size_t i = 0; i < number_of_keys; i++)
+	{
+		if (i * 16 > strlen(str))
+			(*keys)[i] = 0x0000000000000000;
+		else
+			(*keys)[i] = des_hex_to_ull(str + i * 16);
+	}
 }
