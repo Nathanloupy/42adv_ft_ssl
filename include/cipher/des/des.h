@@ -39,8 +39,11 @@ enum e_des_flags
 
 enum e_des_cipher_mode
 {
+	DES_NULL,
 	DES_CBC,
 	DES_ECB,
+	DES3_ECB,
+	DES3_CBC,
 };
 
 typedef struct s_conf_des {
@@ -112,6 +115,8 @@ int			des_derive_key(u_int64_t (*keys)[3], char *passphrase, char *salt, size_t 
 /* DES - ALGORITHM */
 u_int64_t	des_cipher_block(u_int64_t block, u_int64_t key);
 u_int64_t	des_decipher_block(u_int64_t block, u_int64_t key);
+u_int64_t	des3_cipher_block(u_int64_t block, u_int64_t keys[3]);
+u_int64_t	des3_decipher_block(u_int64_t block, u_int64_t keys[3]);
 void		des_round_keys_generation(t_des *des);
 void		des_reverse_round_keys(t_des *des);
 void		des_initial_permutation(t_des *des);
