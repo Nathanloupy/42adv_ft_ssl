@@ -39,11 +39,10 @@ enum e_des_flags
 
 enum e_des_cipher_mode
 {
-	DES_NULL,
-	DES_CBC,
-	DES_ECB,
-	DES3_ECB,
-	DES3_CBC,
+	DES_NULL = 1 << 0,
+	DES_CBC = 1 << 1,
+	DES_ECB = 1 << 2,
+	DES_TRIPLE = 1 << 3,
 };
 
 typedef struct s_conf_des {
@@ -98,7 +97,6 @@ int		des_execute_decipher(t_exec_des *exec_des);
 
 /* DES - UTILS */
 void		des_init(t_conf_des *conf_des);
-void		des_set_mode(t_conf_des *conf_des, char *command);
 int			des_recoverable_error(t_conf *conf);
 
 /* DES - UTILS - STRINGS */

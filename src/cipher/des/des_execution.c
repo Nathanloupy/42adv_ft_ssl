@@ -32,10 +32,10 @@ int	des_execute_cipher(t_exec_des *exec_des)
 		for (size_t j = 0; j < 8; j++)
 			block |= ((u_int64_t)(unsigned char)padded_input[i * 8 + j]) << (56 - j * 8);
 		
-		if (exec_des->mode == DES_CBC || exec_des->mode == DES3_CBC)
+		if (exec_des->mode & DES_CBC)
 			block ^= prev_ciphertext;
 		
-		if (exec_des->mode == DES3_ECB || exec_des->mode == DES3_CBC)
+		if (exec_des->mode & DES_TRIPLE)
 			ciphered_block = des3_cipher_block(block, exec_des->keys);
 		else
 			ciphered_block = des_cipher_block(block, exec_des->keys[0]);
@@ -77,12 +77,12 @@ int	des_execute_decipher(t_exec_des *exec_des)
 			block |= ((u_int64_t)(unsigned char)exec_des->input_buffer[i * 8 + j]) << (56 - j * 8);
 		
 		current_ciphertext = block;
-		if (exec_des->mode == DES3_ECB || exec_des->mode == DES3_CBC)
+		if (exec_des->mode & DES_TRIPLE)
 			deciphered_block = des3_decipher_block(block, exec_des->keys);
 		else
 			deciphered_block = des_decipher_block(block, exec_des->keys[0]);
 		
-		if (exec_des->mode == DES_CBC || exec_des->mode == DES3_CBC)
+		if (exec_des->mode & DES_CBC)
 			deciphered_block ^= prev_ciphertext;
 		
 		for (size_t j = 0; j < 8; j++)

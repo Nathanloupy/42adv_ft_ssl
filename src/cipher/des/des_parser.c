@@ -63,6 +63,18 @@ error_t	des_parse_opt(int key, char *arg, struct argp_state *state)
 	return (0);
 }
 
+static void	des_set_mode(t_conf_des *conf_des, char *command)
+{
+	if (!strncmp(command, "des3", 4))
+		conf_des->mode |= DES_TRIPLE;
+	if (!strcmp(command, "des-ecb") || !strcmp(command, "des3-ecb"))
+		conf_des->mode |= DES_ECB;
+	else if (!strcmp(command, "des-cbc") || !strcmp(command, "des3-cbc"))
+		conf_des->mode |= DES_CBC;
+	else
+		conf_des->mode |= DES_NULL;
+}
+
 int	des_parser(int argc, char **argv, t_conf *conf)
 {
 	t_conf_des	*conf_des = (t_conf_des *)conf;
