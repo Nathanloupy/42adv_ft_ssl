@@ -2,7 +2,7 @@
 
 #define DES_PBKDF2_ITERATIONS 10000
 
-static char	*simple_sha256(const char *data, size_t data_len)
+static char	*simple_sha256(const unsigned char *data, size_t data_len)
 {
 	t_sha256		sha256;
 	char			*hash_str;
@@ -16,7 +16,6 @@ static char	*simple_sha256(const char *data, size_t data_len)
 
 static int hmac_sha256(const unsigned char *key, size_t key_len, const unsigned char *data, size_t data_len, unsigned char *output)
 {
-	t_sha256		sha256;
 	char			*hash_str;
 	unsigned char	ipad[SHA256_BLOCK_SIZE];
 	unsigned char	opad[SHA256_BLOCK_SIZE];
