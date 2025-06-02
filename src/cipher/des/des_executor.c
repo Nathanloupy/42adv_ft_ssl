@@ -40,12 +40,9 @@ int	des_executor(t_conf *conf)
 		return (0);
 	memset(&exec_des, 0, sizeof(t_exec_des));
 	exec_des.mode = conf_des->mode;
-	
-	if (conf_des->mode == DES3_ECB || conf_des->mode == DES3_CBC)
-		number_of_keys = 3;
-	else
-		number_of_keys = 1;
-	
+
+	number_of_keys = (conf_des->mode & DES_TRIPLE) ? 3 : 1;
+
 	if (conf_des->flags & FLAG_DES_KEY)
 	{
 		if (des_check_hex(conf_des->key))
