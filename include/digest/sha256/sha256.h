@@ -3,6 +3,7 @@
 #include "commons.h"
 
 #define SHA256_BLOCK_SIZE 64
+#define SHA256_HASH_SIZE 32
 
 static const u_int32_t SHA256_K[] = {
 	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,

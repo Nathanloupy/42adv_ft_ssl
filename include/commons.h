@@ -9,15 +9,17 @@
 
 typedef struct s_conf_digest	t_conf_digest;
 typedef struct s_conf_base64	t_conf_base64;
+typedef struct s_conf_des		t_conf_des;
 typedef union u_conf			t_conf;
 
 #include "digest.h"
 #include "cipher.h"
 
 enum e_handlers_types {
+	VOID,
+	STANDARD,
 	DIGEST,
 	CIPHER,
-	VOID,
 };
 
 typedef struct s_handler {
@@ -32,6 +34,7 @@ typedef struct s_handler {
 typedef union u_conf {
 	t_conf_digest	digest;
 	t_conf_base64	base64;
+	t_conf_des		des;
 }	t_conf;
 
 static const t_handler HANDLERS[] = {
@@ -66,6 +69,54 @@ static const t_handler HANDLERS[] = {
 		.executor = base64_executor,
 		.cleaner = base64_cleaner,
 		.error = base64_recoverable_error
+	},
+	{
+		.name = "des",
+		.type = CIPHER,
+		.parser = des_parser,
+		.executor = des_executor,
+		.cleaner = des_cleaner,
+		.error = des_recoverable_error
+	},
+	{
+		.name = "des-ecb",
+		.type = CIPHER,
+		.parser = des_parser,
+		.executor = des_executor,
+		.cleaner = des_cleaner,
+		.error = des_recoverable_error
+	},
+	{
+		.name = "des-cbc",
+		.type = CIPHER,
+		.parser = des_parser,
+		.executor = des_executor,
+		.cleaner = des_cleaner,
+		.error = des_recoverable_error
+	},
+	{
+		.name = "des3",
+		.type = CIPHER,
+		.parser = des_parser,
+		.executor = des_executor,
+		.cleaner = des_cleaner,
+		.error = des_recoverable_error
+	},
+	{
+		.name = "des3-ecb",
+		.type = CIPHER,
+		.parser = des_parser,
+		.executor = des_executor,
+		.cleaner = des_cleaner,
+		.error = des_recoverable_error
+	},
+	{
+		.name = "des3-cbc",
+		.type = CIPHER,
+		.parser = des_parser,
+		.executor = des_executor,
+		.cleaner = des_cleaner,
+		.error = des_recoverable_error
 	},
 	{
 		.name = NULL,
