@@ -69,6 +69,8 @@ int	des_executor(t_conf *conf)
 		des_string_length_error(strlen(conf_des->iv), 1);
 		exec_des.iv = des_hex_to_ull(conf_des->iv);
 	}
+	else if (conf_des->mode & DES_CBC)
+		return (fprintf(stderr, "%s: IV undefined\n", FT_SSL_NAME), des_free_exec(&exec_des), 1);
 	else
 		exec_des.iv = 0x0000000000000000;
 	if (conf_des->flags & FLAG_DES_INPUT_FILE)
