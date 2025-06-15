@@ -10,10 +10,12 @@
 typedef struct s_conf_digest	t_conf_digest;
 typedef struct s_conf_base64	t_conf_base64;
 typedef struct s_conf_des		t_conf_des;
+typedef struct s_conf_genrsa	t_conf_genrsa;
 typedef union u_conf			t_conf;
 
 #include "digest.h"
 #include "cipher.h"
+#include "standard.h"
 
 enum e_handlers_types {
 	VOID,
@@ -35,6 +37,7 @@ typedef union u_conf {
 	t_conf_digest	digest;
 	t_conf_base64	base64;
 	t_conf_des		des;
+	t_conf_genrsa	genrsa;
 }	t_conf;
 
 static const t_handler HANDLERS[] = {
@@ -117,6 +120,14 @@ static const t_handler HANDLERS[] = {
 		.executor = des_executor,
 		.cleaner = des_cleaner,
 		.error = des_recoverable_error
+	},
+	{
+		.name = "genrsa",
+		.type = STANDARD,
+		.parser = genrsa_parser,
+		.executor = genrsa_executor,
+		.cleaner = genrsa_cleaner,
+		.error = genrsa_recoverable_error
 	},
 	{
 		.name = NULL,
