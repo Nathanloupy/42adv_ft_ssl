@@ -94,7 +94,7 @@ int	base64_check_encoded(const char *buffer, size_t size)
 			padding++;
 		else if (padding)
 			return (1);
-		else if (!(base64_get_index(buffer[i]) < sizeof(BASE64_ALPHABET)))
+		else if (!(base64_get_index(buffer[i]) < (char)sizeof(BASE64_ALPHABET)))
 			return (1);
 	}
 	if (valid_chars % 4 != 0 || padding > 2)
