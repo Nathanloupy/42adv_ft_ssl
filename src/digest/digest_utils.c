@@ -13,21 +13,19 @@ int	digest_add_to_input(char **input, unsigned char *buffer, size_t bytes_read, 
 
 	if (!*input)
 	{
-		new_input = calloc(bytes_read + 1, sizeof(char));
+		new_input = calloc(bytes_read, sizeof(char));
 		if (!new_input)
 			return (perror_int());
 		memcpy(new_input, buffer, bytes_read);
-		new_input[bytes_read] = '\0';
 		*input = new_input;
 	}
 	else
 	{	
-		new_input = calloc(total_bytes + bytes_read + 1, sizeof(char));
+		new_input = calloc(total_bytes + bytes_read, sizeof(char));
 		if (!new_input)
 			return (perror_int());
 		memcpy(new_input, *input, total_bytes);
 		memcpy(new_input + total_bytes, buffer, bytes_read);
-		new_input[total_bytes + bytes_read] = '\0';
 		free(*input);
 		*input = new_input;
 	}

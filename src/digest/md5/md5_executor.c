@@ -32,7 +32,7 @@ int	md5_executor(t_conf *conf)
 			perror(FT_SSL_NAME);
 			return (1);
 		}
-		result = md5_process(&md5, buffer, total_bytes, 1);
+		result = md5_process(&md5, (unsigned char *)input, total_bytes, 1);
 		conf_digest->stdin_size = total_bytes;
 		if (!result)
 		{

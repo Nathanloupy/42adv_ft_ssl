@@ -32,7 +32,7 @@ int	sha256_executor(t_conf *conf)
 			perror(FT_SSL_NAME);
 			return (1);
 		}
-		result = sha256_process(&sha256, buffer, total_bytes, 1);
+		result = sha256_process(&sha256, (unsigned char *)input, total_bytes, 1);
 		conf_digest->stdin_size = total_bytes;
 		if (!result)
 		{
