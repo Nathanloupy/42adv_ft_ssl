@@ -53,7 +53,8 @@ FILES_STANDARD = genrsa/genrsa_parser.c \
 				genrsa/genrsa_executor.c \
 				genrsa/genrsa_cleaner.c \
 				genrsa/genrsa_utils.c \
-				genrsa/genrsa_check_prime.c
+				check_prime.c \
+				mod_exp.c \
 
 SRCS_MAIN = $(addprefix src/, $(FILES_MAIN))
 
