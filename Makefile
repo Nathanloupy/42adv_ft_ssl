@@ -1,7 +1,7 @@
 # Makefile for ft_ssl
 
 CC = cc
-CCFLAGS = -Wall -Wextra -Werror -lssl -lcrypto
+CCFLAGS = -Wall -Wextra -Werror -lm
 
 NAME = ft_ssl
 BUILD_DIR = bin
@@ -52,7 +52,8 @@ FILES_CIPHER = base64/base64_encode.c \
 FILES_STANDARD = genrsa/genrsa_parser.c \
 				genrsa/genrsa_executor.c \
 				genrsa/genrsa_cleaner.c \
-				genrsa/genrsa_utils.c
+				genrsa/genrsa_utils.c \
+				genrsa/genrsa_check_prime.c
 
 SRCS_MAIN = $(addprefix src/, $(FILES_MAIN))
 

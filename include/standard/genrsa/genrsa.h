@@ -38,3 +38,6 @@ void	genrsa_cleaner(t_conf *conf);
 /* GENRSA - UTILS */
 void	genrsa_init(t_conf_genrsa *conf_genrsa);
 int		genrsa_recoverable_error(t_conf *conf);
+
+/* GENRSA - CHECK PRIME */
+int		genrsa_check_prime(u_int64_t n, float probability);
