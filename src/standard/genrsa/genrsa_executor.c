@@ -2,7 +2,8 @@
 
 int genrsa_executor(t_conf *conf)
 {
-	t_conf_genrsa *conf_genrsa = (t_conf_genrsa *)conf;
+	t_conf_genrsa	*conf_genrsa = (t_conf_genrsa *)conf;
+	t_rsa_key		rsa_key;
 
 	if (conf_genrsa->flags & FLAG_GENRSA_HELP || conf_genrsa->flags & FLAG_GENRSA_USAGE)
 		return (0);
@@ -18,6 +19,8 @@ int genrsa_executor(t_conf *conf)
 			return (perror_int());
 	}
 
-	//TODO: Generate the RSA key and write it to stdout
+	if (generate_rsa_key(&rsa_key))
+		return (1);
+	//TODO: Print the key to the stdout
 	return (0);
 }

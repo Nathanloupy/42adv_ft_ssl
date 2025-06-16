@@ -17,3 +17,10 @@ u_int64_t	mod_exp(u_int64_t base, u_int64_t exp, u_int64_t mod)
 	}
 	return result;
 }
+
+u_int64_t	mod_inv(u_int64_t a, u_int64_t m)
+{
+	(void)a;
+	(void)m;
+	return (0);
+}

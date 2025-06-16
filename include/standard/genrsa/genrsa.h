@@ -4,6 +4,8 @@
 
 #define GENRSA_OPTION_HELP 128
 #define GENRSA_OPTION_USAGE 129
+#define GENRSA_PRIME_PROBABILITY 0.999
+#define GENRSA_MAX_PRIME_GENERATION_ATTEMPTS 50
 
 static struct argp_option genrsa_options[] __attribute__((used)) = {
 	{"out", 'o', "FILE", 0, "Output the key to specified FILE", 0},
@@ -25,6 +27,14 @@ typedef struct s_conf_genrsa {
 	int		output_fd;
 }	t_conf_genrsa;
 
+typedef struct s_rsa_key {
+	u_int64_t p;
+	u_int64_t q;
+	u_int64_t n;
+	u_int64_t e;
+	u_int64_t d;
+}	t_rsa_key;
+
 /* GENRSA - PARSER */
 int		genrsa_parser(int argc, char **argv, t_conf *conf);
 error_t	genrsa_parse_opt(int key, char *arg, struct argp_state *state);
@@ -39,5 +49,5 @@ void	genrsa_cleaner(t_conf *conf);
 void	genrsa_init(t_conf_genrsa *conf_genrsa);
 int		genrsa_recoverable_error(t_conf *conf);
 
-/* GENRSA - CHECK PRIME */
-int		genrsa_check_prime(u_int64_t n, float probability);
+/* GENRSA - GENERATE KEY */
+int		generate_rsa_key(t_rsa_key *rsa_key);
