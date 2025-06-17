@@ -34,10 +34,13 @@ int	generate_rsa_key(t_rsa_key *rsa_key)
 	int			flag_perror = 0;
 	int			urandom_fd;
 
+	memset(rsa_key, 0, sizeof(t_rsa_key));
 	urandom_fd = open("/dev/urandom", O_RDONLY);
 	if (urandom_fd == -1)
 		return (perror_int());
 
+	rsa_key->version = GENRSA_RSA_VERSION;
+	rsa_key->e = GENRSA_RSA_E;
 	for (int i = 0; i < GENRSA_MAX_KEY_GENERATION_ATTEMPTS; i++)
 	{
 		rsa_key->p = choose_prime(urandom_fd);
@@ -53,7 +56,6 @@ int	generate_rsa_key(t_rsa_key *rsa_key)
 			continue;
 		}
 		rsa_key->n = n_result;
-		rsa_key->e = 65537;
 		if (mul_overflow_protected(rsa_key->p - 1, rsa_key->q - 1, &phi_n_result))
 		{
 			flag_perror = 0;
@@ -66,6 +68,14 @@ int	generate_rsa_key(t_rsa_key *rsa_key)
 		}
 		rsa_key->d = mod_inv(rsa_key->e, phi_n_result);
 		if (rsa_key->d == 0)
+		{
+			flag_perror = 0;
+			continue;
+		}
+		rsa_key->d_p = rsa_key->d % (rsa_key->p - 1);
+		rsa_key->d_q = rsa_key->d % (rsa_key->q - 1);
+		rsa_key->q_inv = mod_inv(rsa_key->q, rsa_key->p);
+		if (rsa_key->q_inv == 0)
 		{
 			flag_perror = 0;
 			continue;

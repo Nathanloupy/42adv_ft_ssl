@@ -11,6 +11,9 @@
 #define GENRSA_MIN_PRIME_VALUE 10000
 #define GENRSA_MAX_PRIME_VALUE (1ULL << 31)
 
+#define GENRSA_RSA_VERSION 0
+#define GENRSA_RSA_E 65537
+
 static struct argp_option genrsa_options[] __attribute__((used)) = {
 	{"out", 'o', "FILE", 0, "Output the key to specified FILE", 0},
 	{"help", GENRSA_OPTION_HELP, 0, 0, "Give this help list", 0},
@@ -32,11 +35,15 @@ typedef struct s_conf_genrsa {
 }	t_conf_genrsa;
 
 typedef struct s_rsa_key {
-	u_int64_t p;
-	u_int64_t q;
-	u_int64_t n;
-	u_int64_t e;
-	u_int64_t d;
+	u_int64_t	version;
+	u_int64_t	n;
+	u_int64_t	e;
+	u_int64_t	d;
+	u_int64_t	p;
+	u_int64_t	q;
+	u_int64_t	d_p;
+	u_int64_t	d_q;
+	u_int64_t	q_inv;
 }	t_rsa_key;
 
 /* GENRSA - PARSER */
