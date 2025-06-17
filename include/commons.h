@@ -38,6 +38,7 @@ typedef union u_conf {
 	t_conf_base64	base64;
 	t_conf_des		des;
 	t_conf_genrsa	genrsa;
+	t_conf_rsa		rsa;
 }	t_conf;
 
 static const t_handler HANDLERS[] = {
@@ -128,6 +129,14 @@ static const t_handler HANDLERS[] = {
 		.executor = genrsa_executor,
 		.cleaner = genrsa_cleaner,
 		.error = genrsa_recoverable_error
+	},
+	{
+		.name = "rsa",
+		.type = STANDARD,
+		.parser = rsa_parser,
+		.executor = rsa_executor,
+		.cleaner = rsa_cleaner,
+		.error = rsa_recoverable_error
 	},
 	{
 		.name = NULL,

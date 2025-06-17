@@ -9,3 +9,4 @@ u_int64_t	mod_inv(u_int64_t a, u_int64_t m);
 u_int64_t	gcd(u_int64_t a, u_int64_t b);
 
 #include "genrsa/genrsa.h"
+#include "rsa/rsa.h"
