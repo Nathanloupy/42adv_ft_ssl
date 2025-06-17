@@ -3,9 +3,9 @@
 #include "commons.h"
 
 /* UTILS */
-int			check_prime(u_int64_t n, float probability);
+int			check_prime(u_int64_t n, float probability, int urandom_fd);
 u_int64_t	mod_exp(u_int64_t base, u_int64_t exp, u_int64_t mod);
 u_int64_t	mod_inv(u_int64_t a, u_int64_t m);
-u_int64_t	lcm(u_int64_t a, u_int64_t b);
+u_int64_t	gcd(u_int64_t a, u_int64_t b);
 
 #include "genrsa/genrsa.h"

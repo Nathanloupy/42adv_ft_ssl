@@ -47,7 +47,8 @@ FILES_CIPHER = base64/base64_encode.c \
 				des/des_permutations.c \
 				des/des_rounds.c \
 				des/des_cipher_block.c \
-				des/des_decipher_block.c
+				des/des_decipher_block.c \
+				input_utils.c
 
 FILES_STANDARD = genrsa/genrsa_parser.c \
 				genrsa/genrsa_executor.c \

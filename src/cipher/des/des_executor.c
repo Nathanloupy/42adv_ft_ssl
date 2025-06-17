@@ -13,21 +13,6 @@ static void	des_free_exec(t_exec_des *exec_des)
 	memset(exec_des, 0, sizeof(t_exec_des));
 }
 
-static int	add_to_input_buffer(char *buffer, size_t size, size_t *input_size, char **input)
-{
-	char	*temp;
-
-	temp = calloc(*input_size + size, sizeof(char));
-	if (!temp)
-		return (1);
-	memcpy(temp, *input, *input_size);
-	memcpy(temp + *input_size, buffer, size);
-	*input_size += size;
-	free(*input);
-	*input = temp;
-	return (0);
-}
-
 int	des_executor(t_conf *conf)
 {
 	t_conf_des	*conf_des = (t_conf_des *)conf;

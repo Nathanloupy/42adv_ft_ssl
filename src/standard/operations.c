@@ -61,12 +61,20 @@ u_int64_t	mod_inv(u_int64_t a, u_int64_t m)
 	return ((u_int64_t)old_s);
 }
 
-static u_int64_t	gcd(u_int64_t a, u_int64_t b)
+u_int64_t	gcd(u_int64_t a, u_int64_t b)
 {
-	return (b == 0 ? a : gcd(b, a % b));
-}
+	u_int64_t	temp;
 
-u_int64_t	lcm(u_int64_t a, u_int64_t b)
-{
-	return (a * b / gcd(a, b));
+	if (a == 0)
+		return (b);
+	if (b == 0)
+		return (a);
+
+	while (b != 0)
+	{
+		temp = b;
+		b = a % b;
+		a = temp;
+	}
+	return (a);
 }

@@ -1,21 +1,6 @@
 #include "commons.h"
 
-static int	add_to_input_buffer(char *buffer, size_t size, size_t *input_size, char **input)
-{
-	char	*temp;
-
-	temp = calloc(*input_size + size, sizeof(char));
-	if (!temp)
-		return (1);
-	memcpy(temp, *input, *input_size);
-	memcpy(temp + *input_size, buffer, size);
-	*input_size += size;
-	free(*input);
-	*input = temp;
-	return (0);
-}
-
-static int 	write_encoded(char *output, size_t output_size)
+int 	base64_write_encoded(const char *output, size_t output_size)
 {	
 	for (size_t i = 0; i < output_size; i += BASE64_BLOCK_SIZE)
 	{
@@ -98,7 +83,7 @@ int base64_executor(t_conf *conf)
 		output = base64_encode(input, input_size, &output_size);
 		if (!output)
 			return (free(input), perror_int());
-		if (write_encoded(output, output_size) == -1)
+		if (base64_write_encoded(output, output_size) == -1)
 			return (free(input), free(output), perror_int());
 		free(input);
 		free(output);

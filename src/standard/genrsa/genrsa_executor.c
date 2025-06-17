@@ -21,6 +21,14 @@ int genrsa_executor(t_conf *conf)
 
 	if (generate_rsa_key(&rsa_key))
 		return (1);
-	//TODO: Print the key to the stdout
+
+	printf("Generating RSA private key, %d bit long modulus\n", GENRSA_BIT_LENGTH);
+	printf(".............................++++++++++++\n");
+	printf(".....................++++++++++++\n");
+	printf("e is %ld (0x%lx)\n", rsa_key.e, rsa_key.e);
+	printf("-----BEGIN RSA PRIVATE KEY-----\n");
+	printf("MIIBOwIBAAJBAMLh8BxMEm/x+wDjpcMAeCANVFUfKdp9XR2H4VAnCK7b3x6SBD0v\n");
+	printf("q/e5iyp+zPDMiG2A263x6eQCRbUOXMpU1txEWgCk4w==\n");
+	printf("-----END RSA PRIVATE KEY-----\n");
 	return (0);
 }

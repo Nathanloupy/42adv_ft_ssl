@@ -45,6 +45,7 @@ error_t	base64_parse_opt(int key, char *arg, struct argp_state *state);
 
 /* BASE64 - ENCODE */
 char	*base64_encode(const char *buffer, size_t size, size_t *output_size);
+int		base64_write_encoded(const char *output, size_t output_size);
 
 /* BASE64 - DECODE */
 int		base64_check_encoded(const char *buffer, size_t size);

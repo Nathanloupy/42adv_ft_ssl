@@ -5,7 +5,11 @@
 #define GENRSA_OPTION_HELP 128
 #define GENRSA_OPTION_USAGE 129
 #define GENRSA_PRIME_PROBABILITY 0.999
-#define GENRSA_MAX_PRIME_GENERATION_ATTEMPTS 50
+#define GENRSA_BIT_LENGTH 64
+#define GENRSA_MAX_KEY_GENERATION_ATTEMPTS 50
+#define GENRSA_MAX_PRIME_CHOICE_ATTEMPTS 100000
+#define GENRSA_MIN_PRIME_VALUE 10000
+#define GENRSA_MAX_PRIME_VALUE (1ULL << 31)
 
 static struct argp_option genrsa_options[] __attribute__((used)) = {
 	{"out", 'o', "FILE", 0, "Output the key to specified FILE", 0},
