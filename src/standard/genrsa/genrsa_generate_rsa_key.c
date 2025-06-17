@@ -62,7 +62,7 @@ int	generate_rsa_key(t_rsa_key *rsa_key)
 		}
 		rsa_key->n = n_result;
 		rsa_key->e = 65537;
-		rsa_key->d = mod_inv(rsa_key->e, (rsa_key->p - 1) * (rsa_key->q - 1)); //TODO: Implement mod_inv
+		rsa_key->d = mod_inv(rsa_key->e, lcm(rsa_key->p - 1, rsa_key->q - 1));
 		return (0);
 	}
 	if (flag_perror)
