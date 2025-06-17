@@ -1,5 +1,34 @@
 #include "commons.h"
 
+static int	print_rsa_private_key(t_rsa_key *rsa_key)
+{
+	char	*encoded_key;
+	size_t	encoded_key_size;
+
+	encoded_key = encode_rsa_private_key(rsa_key, &encoded_key_size);
+	if (!encoded_key)
+		return (perror_int());
+
+	if (write(STDOUT_FILENO, "Generating RSA private key, 64 bit long modulus\n", 48) == -1)
+		return (free(encoded_key), perror_int());
+	if (write(STDOUT_FILENO, ".............................++++++++++++\n", 42) == -1)
+		return (free(encoded_key), perror_int());
+	if (write(STDOUT_FILENO, ".....................++++++++++++\n", 34) == -1)
+		return (free(encoded_key), perror_int());
+	if (write(STDOUT_FILENO, "e is 65537 (0x10001)\n", 21) == -1)
+		return (free(encoded_key), perror_int());
+	if (write(STDOUT_FILENO, "-----BEGIN RSA PRIVATE KEY-----\n", 32) == -1)
+		return (free(encoded_key), perror_int());
+	if (base64_write_encoded(encoded_key, encoded_key_size) == -1)
+		return (free(encoded_key), perror_int());
+	free(encoded_key);
+	if (encoded_key_size % BASE64_BLOCK_SIZE == 0 && write(STDOUT_FILENO, "\n", 1) == -1)
+		return (free(encoded_key), perror_int());
+	if (write(STDOUT_FILENO, "-----END RSA PRIVATE KEY-----\n", 30) == -1)
+		return (perror_int());
+	return (0);
+}
+
 int genrsa_executor(t_conf *conf)
 {
 	t_conf_genrsa	*conf_genrsa = (t_conf_genrsa *)conf;
@@ -21,14 +50,5 @@ int genrsa_executor(t_conf *conf)
 
 	if (generate_rsa_key(&rsa_key))
 		return (1);
-
-	printf("Generating RSA private key, %d bit long modulus\n", GENRSA_BIT_LENGTH);
-	printf(".............................++++++++++++\n");
-	printf(".....................++++++++++++\n");
-	printf("e is %ld (0x%lx)\n", rsa_key.e, rsa_key.e);
-	printf("-----BEGIN RSA PRIVATE KEY-----\n");
-	printf("MIIBOwIBAAJBAMLh8BxMEm/x+wDjpcMAeCANVFUfKdp9XR2H4VAnCK7b3x6SBD0v\n");
-	printf("q/e5iyp+zPDMiG2A263x6eQCRbUOXMpU1txEWgCk4w==\n");
-	printf("-----END RSA PRIVATE KEY-----\n");
-	return (0);
+	return (print_rsa_private_key(&rsa_key));
 }

@@ -62,3 +62,6 @@ int		genrsa_recoverable_error(t_conf *conf);
 
 /* GENRSA - GENERATE KEY */
 int		generate_rsa_key(t_rsa_key *rsa_key);
+
+/* GENRSA - ENCODE PRIVATE KEY */
+char	*encode_rsa_private_key(t_rsa_key *rsa_key, size_t *encoded_key_size);

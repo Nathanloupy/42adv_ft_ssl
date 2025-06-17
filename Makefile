@@ -55,6 +55,7 @@ FILES_STANDARD = genrsa/genrsa_parser.c \
 				genrsa/genrsa_cleaner.c \
 				genrsa/genrsa_utils.c \
 				genrsa/genrsa_generate_rsa_key.c \
+				genrsa/genrsa_encode_private_rsa_key.c \
 				check_prime.c \
 				operations.c \
 
