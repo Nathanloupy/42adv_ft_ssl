@@ -1,7 +1,8 @@
 # Makefile for ft_ssl
 
 CC = cc
-CCFLAGS = -Wall -Wextra -Werror -lm
+CFLAGS = -Wall -Wextra -Werror
+LDLIBS = -lm
 
 NAME = ft_ssl
 BUILD_DIR = bin
@@ -82,13 +83,13 @@ OBJS_STANDARD = $(SRCS_STANDARD:.c=.o)
 OBJS = $(OBJS_MAIN) $(OBJS_UTILS) $(OBJS_DIGEST) $(OBJS_CIPHER) $(OBJS_STANDARD)
 
 %.o: %.c
-	@$(CC) $(CCFLAGS) $(INCLUDES) -c $< -o $@
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
 	@mkdir -p $(BUILD_DIR)
-	@$(CC) $(CCFLAGS) $(INCLUDES) $(OBJS) -o $(NAME_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) $(OBJS) -o $(NAME_DIR) $(LDLIBS)
 
 clean:
 	@rm -f $(OBJS)

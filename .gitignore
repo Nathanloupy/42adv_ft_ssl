@@ -56,3 +56,4 @@ docker_helper/
 .vscode/
 *.pub
 *.pem
+compile_flags.txt

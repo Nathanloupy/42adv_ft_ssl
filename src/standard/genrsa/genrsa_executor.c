@@ -23,7 +23,7 @@ static int	print_rsa_private_key(t_rsa_key *rsa_key)
 		return (free(encoded_key), perror_int());
 	free(encoded_key);
 	if (encoded_key_size % BASE64_BLOCK_SIZE == 0 && write(STDOUT_FILENO, "\n", 1) == -1)
-		return (free(encoded_key), perror_int());
+		return (perror_int());
 	if (write(STDOUT_FILENO, "-----END RSA PRIVATE KEY-----\n", 30) == -1)
 		return (perror_int());
 	return (0);
